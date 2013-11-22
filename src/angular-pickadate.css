@@ -1,0 +1,73 @@
+/* line 1, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+}
+/* line 8, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar .controls {
+  margin-top: 3px;
+}
+
+/* line 11, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar-cell {
+  overflow: hidden;
+  margin: 0;
+}
+/* line 13, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar-cell li {
+  display: block;
+  float: left;
+  border: 1px solid #DCDCDC;
+  border-width: 0 1px 1px 0;
+  width: 13.7%;
+  padding: 2% 0 1% 0;
+}
+/* line 21, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar-cell li:nth-child(7n+0) {
+  border-right: 1px solid #DCDCDC;
+}
+/* line 24, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar-cell li:nth-child(1), .calendar-cell li:nth-child(8), .calendar-cell li:nth-child(15), .calendar-cell li:nth-child(22), .calendar-cell li:nth-child(29), .calendar-cell li:nth-child(36) {
+  border-left: 1px solid #DCDCDC;
+}
+/* line 32, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar-cell li.disabled a {
+  color: #DCDCDC;
+}
+/* line 35, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar-cell li.today {
+  background-color: #eaeaea;
+}
+/* line 38, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar-cell li.active {
+  background-color: #b52a00;
+}
+/* line 40, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar-cell li.active a {
+  color: white;
+}
+/* line 43, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar-cell li a {
+  font-size: 12px;
+  color: #666666;
+}
+/* line 47, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar-cell .head {
+  border-top: 1px solid #DCDCDC;
+  background: #f3f3f3;
+}
+/* line 50, /Users/gschammah/redo/wido/app/assets/css/partials/_calendar.sass */
+.calendar-cell .head:nth-child(1), .calendar-cell .head:nth-child(7) {
+  background: #f3f3f3;
+}
+
+.calendar a {
+  text-decoration: none;
+}
+
+.angular-pickadate {
+  width: 300px;
+}

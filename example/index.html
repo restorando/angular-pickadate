@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../src/angular-pickadate.css">
+  </head>
+  <body ng-app="testApp" id="ng-app">
+    <div pickadate ng-model="date"></div>
+
+    <script type="text/javascript" src="http://code.angularjs.org/1.2.0-rc.2/angular.min.js"></script>
+    <script type="text/javascript" src="../src/angular-pickadate.js"></script>
+    <script type="text/javascript">
+      angular.module('testApp', ['pickadate']);
+    </script>
+  </body>
+</html>
