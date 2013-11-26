@@ -6,9 +6,8 @@
     return -1;
   };
 
-  angular.module('pickadate', [])
-
-    .factory('dateUtils', ['dateFilter', function(dateFilter) {
+  angular.module('pickadate.utils', [])
+    .factory('pickadateUtils', ['dateFilter', function(dateFilter) {
       return {
         isDate: function(obj) {
           return Object.prototype.toString.call(obj) === '[object Date]';
@@ -38,9 +37,11 @@
           return dates;
         }
       };
-    }])
+    }]);
 
-    .directive('pickadate', ['$locale', 'dateUtils', 'dateFilter', function($locale, dateUtils, dateFilter) {
+  angular.module('pickadate', ['pickadate.utils'])
+
+    .directive('pickadate', ['$locale', 'pickadateUtils', 'dateFilter', function($locale, dateUtils, dateFilter) {
       return {
         require: 'ngModel',
         scope: {
