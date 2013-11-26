@@ -45,7 +45,10 @@
       return {
         require: 'ngModel',
         scope: {
-          date: '=ngModel'
+          date: '=ngModel',
+          minDate: '=',
+          maxDate: '=',
+          disabledDates: '='
         },
         template:
           '<div class="pickadate">' +
@@ -80,8 +83,8 @@
           '</div>',
 
         link: function(scope, element, attrs, ngModel)  {
-          var minDate = attrs.minDate && dateUtils.stringToDate(attrs.minDate),
-              maxDate = attrs.maxDate && dateUtils.stringToDate(attrs.maxDate),
+          var minDate = scope.minDate && dateUtils.stringToDate(scope.minDate),
+              maxDate = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
               currentDate = new Date();
 
           scope.dayNames    = $locale.DATETIME_FORMATS['SHORTDAY'];
@@ -115,7 +118,7 @@
             for (var i = 0; i < allDates.length; i++) {
               var className = null, date = allDates[i];
 
-              if (date < attrs.minDate || date > attrs.maxDate || dateFilter(date, 'M') !== currentMonth.toString()) {
+              if (date < scope.minDate || date > scope.maxDate || dateFilter(date, 'M') !== currentMonth.toString()) {
                 className = 'pickadate-disabled';
               } else if (indexOf.call(unavailableDates, date) >= 0) {
                 className = 'pickadate-disabled pickadate-unavailable';
