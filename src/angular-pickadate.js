@@ -6,8 +6,6 @@
     return -1;
   };
 
-  var Today = '2013-11-22';
-
   angular.module('pickadate', [])
 
     .factory('dateUtils', ['dateFilter', function(dateFilter) {
@@ -45,27 +43,29 @@
     .directive('pickadate', ['$locale', 'dateUtils', 'dateFilter', function($locale, dateUtils, dateFilter) {
       return {
         require: 'ngModel',
-
+        scope: {
+          date: '=ngModel'
+        },
         template:
-          '<div class="angular-pickadate">' +
-            '<div class="calendar-header">' +
-              '<div class="controls">' +
-                '<button class="prev icons-light-arrow-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">prev</button>' +
-                '<button class="next icons-light-arrow-next" ng-click="changeMonth(1)" ng-show="allowNextMonth">next</button>' +
+          '<div class="pickadate">' +
+            '<div class="pickadate-header">' +
+              '<div class="pickadate-controls">' +
+                '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">prev</a>' +
+                '<a href="" class="pickadate-next" ng-click="changeMonth(1)" ng-show="allowNextMonth">next</a>' +
               '</div>'+
-              '<h3 class="centered-heading">' +
+              '<h3 class="pickadate-centered-heading">' +
                 '{{currentDate | date:"MMMM yyyy"}}' +
               '</h3>' +
             '</div>' +
-            '<div class="calendar-body">' +
-              '<div class="calendar">' +
-                '<ul class="calendar-cell">' +
-                  '<li class="head" ng-repeat="dayName in dayNames">' +
+            '<div class="pickadate-body">' +
+              '<div class="pickadate-main">' +
+                '<ul class="pickadate-cell">' +
+                  '<li class="pickadate-head" ng-repeat="dayName in dayNames">' +
                     '{{dayName}}' +
                   '</li>' +
                 '</ul>' +
-                '<ul class="calendar-cell">' +
-                  '<li ng-repeat="d in dates" class="{{d.className}}" ng-class="{active: date == d.date}">' +
+                '<ul class="pickadate-cell">' +
+                  '<li ng-repeat="d in dates" class="{{d.className}}" ng-class="{\'pickadate-active\': date == d.date}">' +
                     '<a href="#" data-value="{{d.date}}" ng-click="setDate(d.date)" ng-if="!isDateDisabled(d)">' +
                       '{{d.date | date:"d"}}' +
                     '</a>' +
@@ -79,44 +79,47 @@
           '</div>',
 
         link: function(scope, element, attrs, ngModel)  {
-          var currentDate = dateUtils.stringToDate(Today);
+          var minDate = attrs.minDate && dateUtils.stringToDate(attrs.minDate),
+              maxDate = attrs.maxDate && dateUtils.stringToDate(attrs.maxDate),
+              currentDate = new Date();
 
-          scope.dayNames = $locale.DATETIME_FORMATS['SHORTDAY'];
-          scope.date     = Today;
+          scope.dayNames    = $locale.DATETIME_FORMATS['SHORTDAY'];
           scope.currentDate = currentDate;
 
           scope.render = function(initialDate) {
-            var currentMonth = initialDate.getMonth() + 1;
             initialDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1, 3);
-            var dayCount = new Date(initialDate.getFullYear(), initialDate.getMonth() + 1, 0, 3).getDate();
 
-            var prevDates = dateUtils.dateRange(-initialDate.getDay(), 0, initialDate);
-            var currentMonthDates = dateUtils.dateRange(0, dayCount, initialDate);
-            var lastDate = dateUtils.stringToDate(currentMonthDates[currentMonthDates.length - 1]);
-            var nextMonthDates = dateUtils.dateRange(1, 7 - lastDate.getDay(), lastDate);
-
-            var allDates = prevDates.concat(currentMonthDates, nextMonthDates);
-            var unavailableDates = scope.$eval(attrs.disabledDates) || [];
+            var currentMonth    = initialDate.getMonth() + 1,
+              dayCount          = new Date(initialDate.getFullYear(), initialDate.getMonth() + 1, 0, 3).getDate(),
+              prevDates         = dateUtils.dateRange(-initialDate.getDay(), 0, initialDate),
+              currentMonthDates = dateUtils.dateRange(0, dayCount, initialDate),
+              lastDate          = dateUtils.stringToDate(currentMonthDates[currentMonthDates.length - 1]),
+              nextMonthDates    = dateUtils.dateRange(1, 7 - lastDate.getDay(), lastDate),
+              allDates          = prevDates.concat(currentMonthDates, nextMonthDates),
+              unavailableDates  = scope.$eval(attrs.disabledDates) || [],
+              dates             = [],
+              today             = dateFilter(new Date(), 'yyyy-MM-dd');
 
             // Add an extra row if needed to make the calendar to have 6 rows
             if (allDates.length / 7 < 6) {
               allDates = allDates.concat(dateUtils.dateRange(1, 8, allDates[allDates.length - 1]));
             }
 
-            scope.allowPrevMonth = !attrs.minDate || currentMonth > parseInt(dateFilter(attrs.minDate, "M"), 10);
-            scope.allowNextMonth = !attrs.maxDate || currentMonth < parseInt(dateFilter(attrs.maxDate, "M"), 10);
+            var nextMonthInitialDate = new Date(initialDate);
+            nextMonthInitialDate.setMonth(currentMonth);
 
-            var dates = [];
+            scope.allowPrevMonth = !minDate || initialDate > minDate;
+            scope.allowNextMonth = !maxDate || nextMonthInitialDate < maxDate;
 
             for (var i = 0; i < allDates.length; i++) {
               var className = null, date = allDates[i];
 
               if (date < attrs.minDate || date > attrs.maxDate || dateFilter(date, 'M') !== currentMonth.toString()) {
-                className = 'disabled';
+                className = 'pickadate-disabled';
               } else if (indexOf.call(unavailableDates, date) >= 0) {
-                className = 'disabled unavailable';
-              } else if (date === Today) {
-                className = 'today';
+                className = 'pickadate-disabled pickadate-unavailable';
+              } else if (date === today) {
+                className = 'pickadate-today';
               }
 
               dates.push({date: date, className: className});
@@ -129,16 +132,21 @@
             ngModel.$setViewValue(date);
           };
 
+          ngModel.$render = function () {
+            if ((date = ngModel.$modelValue)) {
+              scope.currentDate = currentDate = dateUtils.stringToDate(date);
+            }
+            scope.render(currentDate);
+          };
+
           scope.changeMonth = function (offset) {
             currentDate.setMonth(currentDate.getMonth() + offset);
             scope.render(currentDate);
           };
 
           scope.isDateDisabled = function(dateObj) {
-            /^disabled/.test(dateObj.className);
+            return (/pickadate-disabled/.test(dateObj.className));
           };
-
-          scope.render(currentDate);
         }
       };
     }]);
