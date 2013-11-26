@@ -35,7 +35,7 @@ function MyAppController($scope) {
 }
 ```
 
-`min-date` and `max-dates` take angular expressions, so if you want to specify the values inline, don't forget the quotes!
+`min-date` and `max-dates` take angluar expressions, so if you want to specify the values inline, don't forget the quotes!
 
 ```html
 <div pickadate ng-model="date" min-date="'2013-11-10'" max-date="'2013-12-31'"></div>
@@ -53,7 +53,12 @@ function MyAppController($scope) {
 }
 ```
 
+### I18n
+
+Pickadate uses angular `$locale` module. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [http://code.angularjs.org/1.2.0-rc.2/i18n/](http://code.angularjs.org/1.2.0-rc.2/i18n/)
+
+
 ### Future development
 
-Currently `pickadate` only works as an inline datepicker, but would like to make it work in any text input as an overlay like the `jquery-ui` one. Will be happy to merge your pull requests.
+Currently `pickadate` only works as an inline datepicker, but would like it to make it work in any text input as an overlay like the `jquery-ui` one. Will be happy to merge your pull requests.
 
