@@ -83,9 +83,10 @@
           '</div>',
 
         link: function(scope, element, attrs, ngModel)  {
-          var minDate = scope.minDate && dateUtils.stringToDate(scope.minDate),
-              maxDate = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
-              currentDate = new Date();
+          var minDate       = scope.minDate && dateUtils.stringToDate(scope.minDate),
+              maxDate       = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
+              disabledDates = scope.disabledDates || [],
+              currentDate   = new Date();
 
           scope.dayNames    = $locale.DATETIME_FORMATS['SHORTDAY'];
           scope.currentDate = currentDate;
@@ -100,7 +101,6 @@
               lastDate          = dateUtils.stringToDate(currentMonthDates[currentMonthDates.length - 1]),
               nextMonthDates    = dateUtils.dateRange(1, 7 - lastDate.getDay(), lastDate),
               allDates          = prevDates.concat(currentMonthDates, nextMonthDates),
-              unavailableDates  = scope.$eval(attrs.disabledDates) || [],
               dates             = [],
               today             = dateFilter(new Date(), 'yyyy-MM-dd');
 
@@ -120,7 +120,7 @@
 
               if (date < scope.minDate || date > scope.maxDate || dateFilter(date, 'M') !== currentMonth.toString()) {
                 className = 'pickadate-disabled';
-              } else if (indexOf.call(unavailableDates, date) >= 0) {
+              } else if (indexOf.call(disabledDates, date) >= 0) {
                 className = 'pickadate-disabled pickadate-unavailable';
               } else if (date === today) {
                 className = 'pickadate-today';
@@ -137,8 +137,11 @@
           };
 
           ngModel.$render = function () {
-            if ((date = ngModel.$modelValue)) {
+            if ((date = ngModel.$modelValue) && (indexOf.call(disabledDates, date) === -1)) {
               scope.currentDate = currentDate = dateUtils.stringToDate(date);
+            } else if (date) {
+              // if the initial date set by the user is in the disabled dates list, unset it
+              scope.setDate(undefined);
             }
             scope.render(currentDate);
           };
