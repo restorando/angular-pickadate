@@ -55,5 +55,5 @@ function MyAppController($scope) {
 
 ### Future development
 
-Currently `pickadate` only works as an inline datepicker, but would like it to make it work in any text input as an overlay like the `jquery-ui` one. Will be happy to merge your pull requests.
+Currently `pickadate` only works as an inline datepicker, but would like to make it work in any text input as an overlay like the `jquery-ui` one. Will be happy to merge your pull requests.
 
