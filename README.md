@@ -6,7 +6,7 @@ A simple and fluid inline datepicker for AngularJS with no extra dependencies.
 
 ### Demo
 
-[Open the angular-pickadate demo in a new window](http://embed.plnkr.co/gXP8xdsdP9nJIr0fi1RQ/preview)
+<a href="http://embed.plnkr.co/gXP8xdsdP9nJIr0fi1RQ/preview" target="_blank">View demo in a new window</a>
 
 ### Installation
 
