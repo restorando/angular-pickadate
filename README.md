@@ -4,12 +4,16 @@ A simple and fluid inline datepicker for AngularJS with no extra dependencies.
 
 ![pickadate](http://img.ctrlv.in/img/5294e96436552.jpg)
 
+### Demo
+
+[Open the angular-pickadate demo in a new window](http://embed.plnkr.co/gXP8xdsdP9nJIr0fi1RQ/preview)
+
 ### Installation
 
 1) Add the `pickadate` module to your dependencies
 
 ```javascript
-    angular.module('myApp', ['pickadate']);
+angular.module('myApp', ['pickadate']);
 ```
 
 2) Use the `pickadate` directive in any element
