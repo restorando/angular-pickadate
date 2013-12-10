@@ -27,6 +27,7 @@
 .pickadate-cell li {
   display: block;
   float: left;
+  cursor: pointer;
   border: 1px solid #DCDCDC;
   border-width: 0 1px 1px 0;
   width: 14.285%;
