@@ -54,6 +54,12 @@
   color: #DCDCDC;
 }
 
+.pickadate-cell .pickadate-enabled {
+  cursor: pointer;
+  font-size: 12px;
+  color: #666666;
+}
+
 .pickadate-cell .pickadate-today {
   background-color: #eaeaea;
 }
@@ -62,13 +68,7 @@
   background-color: #b52a00;
 }
 
-.pickadate-cell a {
-  font-size: 12px;
-  color: #666666;
-  text-decoration: none;
-}
-
-.pickadate-cell .pickadate-active a {
+.pickadate-cell .pickadate-active {
   color: white;
 }
 

@@ -69,13 +69,8 @@
                   '</li>' +
                 '</ul>' +
                 '<ul class="pickadate-cell">' +
-                  '<li ng-repeat="d in dates" class="{{d.className}}" ng-class="{\'pickadate-active\': date == d.date}">' +
-                    '<a href="#" data-value="{{d.date}}" ng-click="setDate(d.date)" ng-if="!isDateDisabled(d)">' +
-                      '{{d.date | date:"d"}}' +
-                    '</a>' +
-                    '<span ng-if="isDateDisabled(d)">' +
-                      '{{d.date | date:"d"}}' +
-                    '</span>' +
+                  '<li ng-repeat="d in dates" ng-click="setDate(d)" class="{{d.className}}" ng-class="{\'pickadate-active\': date == d.date}">' +
+                    '{{d.date | date:"d"}}' +
                   '</li>' +
                 '</ul>' +
               '</div>' +
@@ -116,14 +111,18 @@
             scope.allowNextMonth = !maxDate || nextMonthInitialDate < maxDate;
 
             for (var i = 0; i < allDates.length; i++) {
-              var className = null, date = allDates[i];
+              var className = "", date = allDates[i];
 
               if (date < scope.minDate || date > scope.maxDate || dateFilter(date, 'M') !== currentMonth.toString()) {
                 className = 'pickadate-disabled';
               } else if (indexOf.call(disabledDates, date) >= 0) {
                 className = 'pickadate-disabled pickadate-unavailable';
-              } else if (date === today) {
-                className = 'pickadate-today';
+              } else {
+                className = 'pickadate-enabled';
+              }
+
+              if (date === today) {
+                className += ' pickadate-today';
               }
 
               dates.push({date: date, className: className});
@@ -132,8 +131,9 @@
             scope.dates = dates;
           };
 
-          scope.setDate = function(date) {
-            ngModel.$setViewValue(date);
+          scope.setDate = function(dateObj) {
+            if (isDateDisabled(dateObj)) return;
+            ngModel.$setViewValue(dateObj.date);
           };
 
           ngModel.$render = function () {
@@ -151,9 +151,9 @@
             scope.render(currentDate);
           };
 
-          scope.isDateDisabled = function(dateObj) {
+          function isDateDisabled(dateObj) {
             return (/pickadate-disabled/.test(dateObj.className));
-          };
+          }
         }
       };
     }]);
