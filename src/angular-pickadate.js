@@ -69,8 +69,8 @@
                   '</li>' +
                 '</ul>' +
                 '<ul class="pickadate-cell">' +
-                  '<li ng-click="setDate(d.date)" ng-repeat="d in dates" class="{{d.className}}" ng-class="{\'pickadate-active\': date == d.date}">' +
-                    '<a href="#" data-value="{{d.date}}" ng-if="!isDateDisabled(d)">' +
+                  '<li ng-repeat="d in dates" class="{{d.className}}" ng-class="{\'pickadate-active\': date == d.date}">' +
+                    '<a href="#" data-value="{{d.date}}" ng-click="setDate(d.date)" ng-if="!isDateDisabled(d)">' +
                       '{{d.date | date:"d"}}' +
                     '</a>' +
                     '<span ng-if="isDateDisabled(d)">' +
