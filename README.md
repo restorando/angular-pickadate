@@ -39,7 +39,7 @@ function MyAppController($scope) {
 }
 ```
 
-`min-date` and `max-dates` take angluar expressions, so if you want to specify the values inline, don't forget the quotes!
+`min-date` and `max-date` take angluar expressions, so if you want to specify the values inline, don't forget the quotes!
 
 ```html
 <div pickadate ng-model="date" min-date="'2013-11-10'" max-date="'2013-12-31'"></div>
