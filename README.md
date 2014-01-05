@@ -61,6 +61,10 @@ function MyAppController($scope) {
 
 Pickadate uses angular `$locale` module. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [http://code.angularjs.org/1.2.0-rc.2/i18n/](http://code.angularjs.org/1.2.0-rc.2/i18n/)
 
+### Future development
+
+Currently `pickadate` only works as an inline datepicker, but would like it to make it work in any text input as an overlay like the `jquery-ui` one. Will be happy to merge your pull requests.
+
 ## License
 
 Copyright (c) 2013 Restorando
@@ -85,8 +89,4 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-### Future development
-
-Currently `pickadate` only works as an inline datepicker, but would like it to make it work in any text input as an overlay like the `jquery-ui` one. Will be happy to merge your pull requests.
 
