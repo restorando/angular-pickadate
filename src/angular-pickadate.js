@@ -147,6 +147,11 @@
           };
 
           scope.changeMonth = function (offset) {
+            // If the current date is January 31th, setting the month to date.getMonth() + 1
+            // sets the date to March the 3rd, since the date object adds 30 days to the current
+            // date. Settings the date to the 2nd day of the month is a workaround to prevent this
+            // behaviour
+            currentDate.setDate(1);
             currentDate.setMonth(currentDate.getMonth() + offset);
             scope.render(currentDate);
           };
