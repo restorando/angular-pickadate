@@ -141,7 +141,7 @@
               scope.currentDate = currentDate = dateUtils.stringToDate(date);
             } else if (date) {
               // if the initial date set by the user is in the disabled dates list, unset it
-              scope.setDate(undefined);
+              scope.setDate({});
             }
             scope.render(currentDate);
           };
