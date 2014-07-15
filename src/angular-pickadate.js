@@ -46,6 +46,7 @@
         require: 'ngModel',
         scope: {
           date: '=ngModel',
+          defaultDate: '=',
           minDate: '=',
           maxDate: '=',
           disabledDates: '='
@@ -81,7 +82,7 @@
           var minDate       = scope.minDate && dateUtils.stringToDate(scope.minDate),
               maxDate       = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
               disabledDates = scope.disabledDates || [],
-              currentDate   = new Date();
+              currentDate   = (scope.defaultDate && dateUtils.stringToDate(scope.defaultDate)) || new Date();
 
           scope.dayNames    = $locale.DATETIME_FORMATS['SHORTDAY'];
           scope.currentDate = currentDate;
