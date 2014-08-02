@@ -59,7 +59,20 @@ function MyAppController($scope) {
 
 ### I18n
 
-Pickadate uses angular `$locale` module. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [http://code.angularjs.org/1.2.0-rc.2/i18n/](http://code.angularjs.org/1.2.0-rc.2/i18n/)
+Pickadate uses angular `$locale` module for the date translations. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [http://code.angularjs.org/1.2.0-rc.2/i18n/](http://code.angularjs.org/1.2.0-rc.2/i18n/).
+
+For the remaining translations you can configure the `pickadateI18nProvider`.
+
+```javascript
+angular.module('testApp', ['pickadate'])
+
+    .config(function(pickadateI18nProvider) {
+        pickadateI18nProvider.translations = {
+            prev: 'ant',
+            next: 'sig'
+        }
+    });
+```
 
 ### Future development
 

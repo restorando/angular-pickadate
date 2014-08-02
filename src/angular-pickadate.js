@@ -6,7 +6,27 @@
     return -1;
   };
 
-  angular.module('pickadate.utils', [])
+  angular.module('pickadate', [])
+
+    .provider('pickadateI18n', function() {
+      var defaults = {
+        'prev': 'prev',
+        'next': 'next'
+      };
+
+      this.translations = {};
+
+      this.$get = function() {
+        var translations = this.translations;
+
+        return {
+          t: function(key) {
+            return translations[key] || defaults[key];
+          }
+        }
+      }
+    })
+
     .factory('pickadateUtils', ['dateFilter', function(dateFilter) {
       return {
         isDate: function(obj) {
@@ -37,11 +57,9 @@
           return dates;
         }
       };
-    }]);
+    }])
 
-  angular.module('pickadate', ['pickadate.utils'])
-
-    .directive('pickadate', ['$locale', 'pickadateUtils', 'dateFilter', function($locale, dateUtils, dateFilter) {
+    .directive('pickadate', ['$locale', 'pickadateUtils', 'pickadateI18n', 'dateFilter', function($locale, dateUtils, i18n, dateFilter) {
       return {
         require: 'ngModel',
         scope: {
@@ -54,8 +72,8 @@
           '<div class="pickadate">' +
             '<div class="pickadate-header">' +
               '<div class="pickadate-controls">' +
-                '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">prev</a>' +
-                '<a href="" class="pickadate-next" ng-click="changeMonth(1)" ng-show="allowNextMonth">next</a>' +
+                '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">{{t("prev")}}</a>' +
+                '<a href="" class="pickadate-next" ng-click="changeMonth(1)" ng-show="allowNextMonth">{{t("next")}}</a>' +
               '</div>'+
               '<h3 class="pickadate-centered-heading">' +
                 '{{currentDate | date:"MMMM yyyy"}}' +
@@ -85,6 +103,7 @@
 
           scope.dayNames    = $locale.DATETIME_FORMATS['SHORTDAY'];
           scope.currentDate = currentDate;
+          scope.t           = i18n.t;
 
           scope.render = function(initialDate) {
             initialDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1, 3);
