@@ -57,6 +57,20 @@ function MyAppController($scope) {
 }
 ```
 
+#### on-date-selected
+
+Call callback function when a date is clicked on
+
+```html
+<div pickadate ng-model="date" on-date-selected="somefunction"></div>
+```
+
+```javascript
+function MyAppController($scope) {
+    $scope.somefunction = function(selectedDate) { alert(selectedDate) };
+}
+```
+
 ### I18n
 
 Pickadate uses angular `$locale` module for the date translations. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [http://code.angularjs.org/1.2.0-rc.2/i18n/](http://code.angularjs.org/1.2.0-rc.2/i18n/).

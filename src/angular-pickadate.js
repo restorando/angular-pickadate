@@ -66,7 +66,8 @@
           date: '=ngModel',
           minDate: '=',
           maxDate: '=',
-          disabledDates: '='
+          disabledDates: '=',
+          onDateSelected: '&'
         },
         template:
           '<div class="pickadate">' +
@@ -96,10 +97,10 @@
           '</div>',
 
         link: function(scope, element, attrs, ngModel)  {
-          var minDate       = scope.minDate && dateUtils.stringToDate(scope.minDate),
-              maxDate       = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
-              disabledDates = scope.disabledDates || [],
-              currentDate   = new Date();
+          var minDate        = scope.minDate && dateUtils.stringToDate(scope.minDate),
+              maxDate        = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
+              disabledDates  = scope.disabledDates || [],
+              currentDate    = new Date();
 
           scope.dayNames    = $locale.DATETIME_FORMATS['SHORTDAY'];
           scope.currentDate = currentDate;
@@ -153,6 +154,8 @@
           scope.setDate = function(dateObj) {
             if (isDateDisabled(dateObj)) return;
             ngModel.$setViewValue(dateObj.date);
+            
+            if(scope.onDateSelected()) scope.onDateSelected()(dateObj.date);
           };
 
           ngModel.$render = function () {
