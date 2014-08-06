@@ -95,6 +95,10 @@
   width: 100%;
 }
 
+.pickadate-controls .pickadate-prev {
+  display: inline-block;
+}
+
 .pickadate-controls .pickadate-next {
   float: right;
 }

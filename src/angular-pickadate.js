@@ -11,7 +11,9 @@
     .provider('pickadateI18n', function() {
       var defaults = {
         'prev': 'prev',
-        'next': 'next'
+        'next': 'next',
+        'prev year': 'prev year',
+        'next year': 'next year'
       };
 
       this.translations = {};
@@ -66,14 +68,21 @@
           date: '=ngModel',
           minDate: '=',
           maxDate: '=',
-          disabledDates: '='
+          disabledDates: '=',
+          showYearNav: '='
         },
         template:
           '<div class="pickadate">' +
             '<div class="pickadate-header">' +
               '<div class="pickadate-controls">' +
-                '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">{{t("prev")}}</a>' +
-                '<a href="" class="pickadate-next" ng-click="changeMonth(1)" ng-show="allowNextMonth">{{t("next")}}</a>' +
+                '<div class="pickadate-prev">' +
+                  '<a href="" ng-click="changeYear(-1)" ng-show="showYearNav && allowPrevYear">{{t("prev year")}}</a> ' +
+                  '<a href="" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">{{t("prev")}}</a>' +
+                '</div>' +
+                '<div class="pickadate-next">' +
+                  '<a href="" ng-click="changeMonth(1)" ng-show="allowNextMonth">{{t("next")}}</a> ' +
+                  '<a href="" ng-click="changeYear(1)" ng-show="showYearNav && allowNextYear">{{t("next year")}}</a>' +
+                '</div>' +
               '</div>'+
               '<h3 class="pickadate-centered-heading">' +
                 '{{currentDate | date:"MMMM yyyy"}}' +
@@ -126,8 +135,10 @@
             var nextMonthInitialDate = new Date(initialDate);
             nextMonthInitialDate.setMonth(currentMonth);
 
+            scope.allowPrevYear  = !minDate || initialDate.getFullYear() > minDate.getFullYear();
             scope.allowPrevMonth = !minDate || initialDate > minDate;
             scope.allowNextMonth = !maxDate || nextMonthInitialDate < maxDate;
+            scope.allowNextYear  = !maxDate || initialDate.getFullYear() < maxDate.getFullYear();
 
             for (var i = 0; i < allDates.length; i++) {
               var className = "", date = allDates[i];
@@ -174,6 +185,18 @@
             currentDate.setMonth(currentDate.getMonth() + offset);
             scope.render(currentDate);
           };
+
+          scope.changeYear = function (offset) {
+            currentDate.setFullYear(currentDate.getFullYear() + offset);
+
+            if (currentDate > maxDate) {
+              currentDate.setTime(maxDate.getTime());
+            } else if (currentDate < minDate) {
+              currentDate.setTime(minDate.getTime());
+            }
+
+            scope.render(currentDate);
+          }
 
           function isDateDisabled(dateObj) {
             return (/pickadate-disabled/.test(dateObj.className));
