@@ -137,7 +137,7 @@
 
             scope.allowPrevYear  = !minDate || initialDate.getFullYear() > minDate.getFullYear();
             scope.allowPrevMonth = !minDate || initialDate > minDate;
-            scope.allowNextMonth = !maxDate || nextMonthInitialDate < maxDate;
+            scope.allowNextMonth = !maxDate || nextMonthInitialDate <= maxDate;
             scope.allowNextYear  = !maxDate || initialDate.getFullYear() < maxDate.getFullYear();
 
             for (var i = 0; i < allDates.length; i++) {
