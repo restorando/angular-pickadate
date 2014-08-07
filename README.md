@@ -57,6 +57,20 @@ function MyAppController($scope) {
 }
 ```
 
+#### default-date
+
+Allows you to preset the calendar to a particular month without setting the chosen date.
+
+```html
+<div pickadate default-date="presetDate"></div>
+```
+
+```javascript
+function MyAppController($scope) {
+    $scope.presetDate = '2013-12-01';
+}
+```
+
 ### I18n
 
 Pickadate uses angular `$locale` module for the date translations. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [http://code.angularjs.org/1.2.0-rc.2/i18n/](http://code.angularjs.org/1.2.0-rc.2/i18n/).
