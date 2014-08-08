@@ -15,10 +15,14 @@
   </head>
   <body ng-app="testApp" id="ng-app" ng-controller="TestController">
     <div class="container">
-      <div pickadate ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates="disabledDates" week-starts-on="0" no-extra-rows></div>
+      <div pickadate="opts" ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates="disabledDates" week-starts-on="0" display-month="presetDate" no-extra-rows></div>
 
       <div class="selected-date">
         Selected date is {{date || '(no date selected)'}}
+      </div>
+
+      <div>
+        <button ng-click="toggleClickThrough()">Toggle Selecting Other Months</button>
       </div>
     </div>
 
@@ -27,11 +31,18 @@
     <script type="text/javascript">
       angular.module('testApp', ['pickadate']);
 
-      function TestController($scope) {
-        $scope.date = '2014-11-26';
+      function TestController($scope, dateFilter) {
+        $scope.date = void 0;
+        $scope.presetDate = '2014-03-01'
         $scope.minDate = '2014-09-05';
         $scope.maxDate = '2015-12-04';
         $scope.disabledDates = ['2014-11-19', '2014-11-30'];
+        $scope.opts = {
+          clickThroughMonths: true
+        };
+        $scope.toggleClickThrough = function () {
+          $scope.opts.clickThroughMonths = !$scope.opts.clickThroughMonths;
+        };
       }
     </script>
   </body>

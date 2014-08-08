@@ -84,6 +84,7 @@
       return {
         require: 'ngModel',
         scope: {
+          opts: '=pickadate',
           date: '=ngModel',
           defaultDate: '=',
           minDate: '=',
@@ -92,7 +93,7 @@
           weekStartsOn: '='
         },
         template:
-          '<div class="pickadate">' +
+          '<div class="pickadate" ng-class="optClasses()">' +
             '<div class="pickadate-header">' +
               '<div class="pickadate-controls">' +
                 '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">{{t("prev")}}</a>' +
@@ -124,7 +125,13 @@
               disabledDates = scope.disabledDates || [],
               weekStartsOn  = scope.weekStartsOn || 0,
               noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
-              currentDate   = (scope.defaultDate && dateUtils.stringToDate(scope.defaultDate)) || new Date();
+              currentDate   = (scope.defaultDate && dateUtils.stringToDate(scope.defaultDate)) || new Date(),
+              defaultOpts   = { clickThroughMonths: false },
+              opts          = angular.extend(defaultOpts, scope.opts || {});
+
+          if (scope.opts) {
+            opts = angular.extend(scope.opts, opts);
+          }
 
           if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
             weekStartsOn = 0;
@@ -133,6 +140,14 @@
           scope.dayNames    = dateUtils.buildDayNames(weekStartsOn);
           scope.currentDate = currentDate;
           scope.t           = i18n.t;
+
+          scope.optClasses = function () {
+            var classes = [];
+            if (opts.clickThroughMonths) {
+              classes.push('pickadate-click-through');
+            }
+            return classes;
+          };
 
           scope.render = function(initialDate) {
             initialDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1, 3);
@@ -154,11 +169,17 @@
                   date      = dateFilter(dateObj, 'yyyy-MM-dd');
 
               if (date < scope.minDate || date > scope.maxDate || dateFilter(dateObj, 'M') !== currentMonth.toString()) {
-                className = 'pickadate-disabled';
-              } else if (indexOf.call(disabledDates, date) >= 0) {
-                className = 'pickadate-disabled pickadate-unavailable';
+                className = 'pickadate-disabled pickadate-out-of-range';
               } else {
-                className = 'pickadate-enabled';
+                if (indexOf.call(disabledDates, date) >= 0) {
+                  className = 'pickadate-disabled pickadate-unavailable';
+                }
+                if (dateFilter(date, 'M') !== currentMonth.toString()) {
+                  className = 'pickadate-disabled pickadate-out-of-month';
+                }
+                if (className === '') {
+                  className = 'pickadate-enabled';
+                }
               }
 
               if (date === today) {
@@ -197,7 +218,17 @@
             scope.render(currentDate);
           };
 
+          function getMonthDelta(target, current) {
+            var targetMonth = target.getFullYear() * 12 + target.getMonth()
+                currentMonth = current.getFullYear() * 12 + current.getMonth();
+            return targetMonth - currentMonth;
+          }
+
           function isDateDisabled(dateObj) {
+            if (opts.clickThroughMonths && /pickadate-out-of-month/.test(dateObj.className)) {
+              scope.changeMonth(getMonthDelta(dateUtils.stringToDate(dateObj.date), currentDate));
+              return false;
+            }
             return (/pickadate-disabled/.test(dateObj.className));
           }
         }
