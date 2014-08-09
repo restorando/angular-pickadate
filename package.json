@@ -3,11 +3,8 @@
   "version": "0.2.0",
   "description": "A simple and fluid inline datepicker for AngularJS with no extra dependencies",
   "main": "index.js",
-  "directories": {
-    "example": "example"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
@@ -25,6 +22,11 @@
   },
   "homepage": "https://github.com/restorando/angular-pickadate",
   "devDependencies": {
-    "karma": "^0.12.19"
+    "gulp": "^3.8.7",
+    "karma": "^0.12.19",
+    "karma-chai-plugins": "^0.2.3",
+    "karma-mocha": "^0.1.7",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "lodash": "^2.4.1"
   }
 }
