@@ -14,7 +14,10 @@ describe('pickadateUtils', function () {
       var dateString = "2014-02-04",
           date = utils.stringToDate(dateString);
 
-      expect(date.getTime()).to.equal(1391493600000);
+      expect(date.getDate()).to.equal(4);
+      expect(date.getMonth()).to.equal(1);
+      expect(date.getFullYear()).to.equal(2014);
+      expect(date.getHours()).to.equal(3);
     });
 
     it("returns a new date if a date object is passed", function() {
