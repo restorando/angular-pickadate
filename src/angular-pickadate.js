@@ -219,7 +219,7 @@
               if (date < scope.minDate || date > scope.maxDate || dateFilter(dateObj, 'M') !== currentMonth.toString()) {
                 className = 'pickadate-disabled pickadate-out-of-range';
               } else {
-                if (indexOf.call(scope.disabledDates, date) >= 0) {
+                if (indexOf.call(scope.disabledDates || [], date) >= 0) {
                   className = 'pickadate-disabled pickadate-unavailable';
                 }
                 if (dateFilter(date, 'M') !== currentMonth.toString()) {
@@ -247,7 +247,7 @@
 
           ngModel.$render = function () {
             var date;
-            if ((date = ngModel.$modelValue) && (indexOf.call(scope.disabledDates, date) === -1)) {
+            if ((date = ngModel.$modelValue) && (indexOf.call(scope.disabledDates || [], date) === -1)) {
               scope.currentDate = currentDate = dateUtils.stringToDate(date);
               scope.displayMonth = dateUtils.toIso(currentDate);
             } else if (date) {
