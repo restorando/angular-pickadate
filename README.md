@@ -55,6 +55,8 @@ function MyAppController($scope) {
 <div pickadate ng-model="date" min-date="'2013-11-10'" max-date="'2013-12-31'"></div>
 ```
 
+Changes to min/max dates aren't reflected until the next month change. See *display-month* below.
+
 #### disabled-dates
 
 ```html
@@ -67,12 +69,14 @@ function MyAppController($scope) {
 }
 ```
 
-#### default-date
+Changes to disabled dates aren't reflected until the next month change. See *display-month* below.
 
-Allows you to preset the calendar to a particular month without setting the chosen date.
+#### display-month
+
+Allows you to (pre)set the calendar to a particular month without setting the chosen date.
 
 ```html
-<div pickadate default-date="presetDate"></div>
+<div pickadate display-month="presetDate"></div>
 ```
 
 ```javascript
@@ -80,6 +84,10 @@ function MyAppController($scope) {
     $scope.presetDate = '2013-12-01';
 }
 ```
+
+This option will let you navigate to months beyond min/max dates if configured. All of the dates will be unavailable. Use your judgement as to whether you want that.
+
+You can also use this option to re-render the current month if you've made changes to the min/max/disabled dates. Just set it to a value within the same month which is different to its current value.
 
 ### I18n
 
