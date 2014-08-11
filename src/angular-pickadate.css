@@ -54,9 +54,12 @@
   color: #DCDCDC;
 }
 
-.pickadate-cell .pickadate-enabled {
+.pickadate-cell .pickadate-enabled,
+.pickadate-click-through .pickadate-cell .pickadate-out-of-month {
   cursor: pointer;
-  font-size: 12px;
+}
+
+.pickadate-cell .pickadate-enabled {
   color: #666666;
 }
 

@@ -26,6 +26,16 @@ Pickadate is fluid, so it will take the width of the parent container.
 
 ### Pickadate options
 
+The `pickadate` directive can be passed an object with options set on it. This is optional. The following are the options available (with their default values):
+
+```javascript
+{
+    clickThroughMonths: false
+}
+```
+
+`clickThroughMonths` - allow for selection of dates outside the current month, which if selected will navigate you to that month.
+
 #### min-date, max-date
 
 ```html
