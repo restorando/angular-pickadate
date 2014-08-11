@@ -28,7 +28,16 @@
       };
     })
 
-    .factory('pickadateUtils', ['$locale', function($locale) {
+    .provider('pickadateOption', function () {
+      this.defaults = {
+        clickThroughMonths: false
+      };
+      this.$get = function () {
+        return this.defaults;
+      };
+    })
+
+    .factory('pickadateUtils', ['$locale', 'dateFilter', function($locale, dateFilter) {
       return {
         isDate: function(obj) {
           return Object.prototype.toString.call(obj) === '[object Date]';
@@ -80,7 +89,7 @@
       };
     }])
 
-    .directive('pickadate', ['$locale', 'pickadateUtils', 'pickadateI18n', 'dateFilter', function($locale, dateUtils, i18n, dateFilter) {
+    .directive('pickadate', ['$locale', 'pickadateUtils', 'pickadateI18n', 'pickadateOption', 'dateFilter', function($locale, dateUtils, i18n, defaultOpts, dateFilter) {
       return {
         require: 'ngModel',
         scope: {
