@@ -27,6 +27,15 @@
       }
     })
 
+    .provider('pickadateOption', function () {
+      this.defaults = {
+        clickThroughMonths: false
+      };
+      this.$get = function () {
+        return this.defaults;
+      };
+    })
+
     .factory('pickadateUtils', ['dateFilter', function(dateFilter) {
       return {
         isDate: function(obj) {
@@ -59,7 +68,7 @@
       };
     }])
 
-    .directive('pickadate', ['$locale', 'pickadateUtils', 'pickadateI18n', 'dateFilter', function($locale, dateUtils, i18n, dateFilter) {
+    .directive('pickadate', ['$locale', 'pickadateUtils', 'pickadateI18n', 'pickadateOption', 'dateFilter', function($locale, dateUtils, i18n, defaultOpts, dateFilter) {
       return {
         require: 'ngModel',
         scope: {
@@ -102,8 +111,7 @@
               maxDate       = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
               disabledDates = scope.disabledDates || [],
               currentDate   = (scope.defaultDate && dateUtils.stringToDate(scope.defaultDate)) || new Date(),
-              defaultOpts   = { clickThroughMonths: false },
-              opts          = angular.extend(defaultOpts, scope.opts || {});         
+              opts          = angular.extend(defaultOpts, scope.opts || {});
 
           if (scope.opts) {
             opts = angular.extend(scope.opts, opts);
