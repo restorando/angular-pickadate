@@ -11,7 +11,7 @@ module.exports = {
 
   // frameworks to use
   // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-  frameworks: ['mocha', 'chai'],
+  frameworks: ['mocha', 'chai', 'chai-jquery'],
 
 
   // list of files / patterns to load in the browser
@@ -19,6 +19,7 @@ module.exports = {
     'test/lib/angular.js',
     'test/lib/*.js',
     'src/angular-pickadate.js',
+    'node_modules/jquery/dist/jquery.js',
     'test/**/*.spec.js'
   ],
 
