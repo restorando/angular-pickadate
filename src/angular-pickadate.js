@@ -128,7 +128,7 @@
             nextMonthInitialDate.setMonth(currentMonth);
 
             scope.allowPrevMonth = !minDate || initialDate > minDate;
-            scope.allowNextMonth = !maxDate || nextMonthInitialDate < maxDate;
+            scope.allowNextMonth = !maxDate || nextMonthInitialDate <= maxDate;
 
             for (var i = 0; i < allDates.length; i++) {
               var className = "", date = allDates[i];
