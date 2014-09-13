@@ -1,4 +1,5 @@
 ;(function(angular){
+  'use strict';
   var indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (i in this && this[i] === item) return i;
@@ -23,8 +24,8 @@
           t: function(key) {
             return translations[key] || defaults[key];
           }
-        }
-      }
+        };
+      };
     })
 
     .factory('pickadateUtils', ['dateFilter', function(dateFilter) {
@@ -101,7 +102,7 @@
               disabledDates = scope.disabledDates || [],
               currentDate   = new Date();
 
-          scope.dayNames    = $locale.DATETIME_FORMATS['SHORTDAY'];
+          scope.dayNames    = $locale.DATETIME_FORMATS.SHORTDAY;
           scope.currentDate = currentDate;
           scope.t           = i18n.t;
 
@@ -156,6 +157,7 @@
           };
 
           ngModel.$render = function () {
+            var date;
             if ((date = ngModel.$modelValue) && (indexOf.call(disabledDates, date) === -1)) {
               scope.currentDate = currentDate = dateUtils.stringToDate(date);
             } else if (date) {
