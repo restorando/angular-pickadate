@@ -1,4 +1,5 @@
 describe('pickadateUtils', function () {
+  'use strict';
   var utils = null;
 
   beforeEach(module("pickadate"));
