@@ -162,6 +162,14 @@ describe('pickadate', function () {
         expect($('.pickadate-next')).to.have.class('ng-hide');
       });
 
+      it("renders the next button if maxDate is set to the beginning of a month", function() {
+        $scope.date    = '2014-08-31';
+        $scope.maxDate = '2014-09-01';
+        compile();
+
+        expect($('.pickadate-next')).not.to.have.class('ng-hide');
+      });
+
     });
   });
 
