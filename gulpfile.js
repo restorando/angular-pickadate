@@ -14,7 +14,7 @@ gulp.task('lint', function() {
 /**
  * Run test once and exit
  */
-gulp.task('test', function (done) {
+gulp.task('test', ['lint'], function (done) {
   karma.start(_.assign({}, karmaConf, {singleRun: true}), done);
 });
 
