@@ -1,3 +1,5 @@
+/* jshint strict: false, node: true */
+
 var gulp = require('gulp');
 var _ = require('lodash');
 var karma = require('karma').server;
