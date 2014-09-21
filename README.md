@@ -85,7 +85,7 @@ Sets the first day of the week. The default is 0 for Sunday.
 If true, the calendar will have between 4 and 6 rows. By default the calendar will always have 6 rows.
 
 ```html
-<div no-extra-rows="true"></div>
+<div pickadate no-extra-rows="true"></div>
 ```
 
 ### I18n
