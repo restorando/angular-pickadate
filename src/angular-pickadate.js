@@ -45,8 +45,9 @@
           return new Date(year, month - 1, day, 3);
         },
 
-        visibleDates: function(date, firstDay) {
+        visibleDates: function(date, firstDay, noExtraRows) {
           var dates = [];
+          var lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0, 3);
 
           date = new Date(date);
           while (date.getDay() !== firstDay) {
@@ -54,6 +55,9 @@
           }
 
           for (var i = 0; i < 42; i++) {
+            if (noExtraRows && date.getDay() === firstDay && date > lastDate) {
+              break;
+            }
             dates.push(new Date(date));
             date.setDate(date.getDate() + 1);
           }
@@ -82,7 +86,8 @@
           minDate: '=',
           maxDate: '=',
           disabledDates: '=',
-          firstDay: '='
+          firstDay: '=',
+          noExtraRows: '='
         },
         template:
           '<div class="pickadate">' +
@@ -126,7 +131,7 @@
             initialDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1, 3);
 
             var currentMonth = initialDate.getMonth() + 1,
-                allDates     = dateUtils.visibleDates(initialDate, firstDay),
+                allDates     = dateUtils.visibleDates(initialDate, firstDay, scope.noExtraRows),
                 dates        = [],
                 today        = dateFilter(new Date(), 'yyyy-MM-dd');
 

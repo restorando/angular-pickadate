@@ -60,12 +60,20 @@ describe('pickadateUtils', function () {
       expect(dates.slice(-1)[0]).to.deep.equal(new Date('2015-02-07'));
     });
 
-    it('has 6 rows of dates', function() {
+    it('has 6 rows of dates by default', function() {
       expect(utils.visibleDates(date, firstDay).length).to.equal(6 * 7);
     });
 
+    it('should not add empty rows when told not to', function() {
+      expect(utils.visibleDates(date, firstDay, true).length).to.equal(5 * 7);
+    });
+
     it('adds 2 extra rows when required', function() {
-      expect(utils.visibleDates(new Date('2015-02-01'), firstDay).length).to.equal(6 * 7);
+      var date = new Date('2015-02-01');
+
+      expect(utils.visibleDates(date, firstDay, false).length).to.equal(6 * 7);
+      expect(utils.visibleDates(date, firstDay, true ).length).to.equal(4 * 7);
+      expect(utils.visibleDates(date, 1,        true ).length).to.equal(5 * 7);
     });
 
     it('works when the first day of the week is monday', function() {
