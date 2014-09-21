@@ -15,7 +15,7 @@
   </head>
   <body ng-app="testApp" id="ng-app" ng-controller="TestController">
     <div class="container">
-      <div pickadate ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates="disabledDates" first-day="0"></div>
+      <div pickadate ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates="disabledDates" first-day="0" no-extra-rows="false"></div>
 
       <div class="selected-date">
         Selected date is {{date || '(no date selected)'}}
