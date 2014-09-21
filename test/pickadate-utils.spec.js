@@ -29,20 +29,63 @@ describe('pickadateUtils', function () {
 
   });
 
-  describe('dateRange', function() {
-    var date = new Date(1391493600000);
+  describe('rotateDayNames', function() {
+    var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        firstDay = 3;
 
-    it("returns an array of date strings given start, end and initial params", function() {
-      expect(utils.dateRange(0, 5, date)).to.deep.equal(['2014-02-04', '2014-02-05', '2014-02-06',
-                                                         '2014-02-07', '2014-02-08']);
-
-      expect(utils.dateRange(-1, 5, date)).to.deep.equal(['2014-02-03', '2014-02-04', '2014-02-05',
-                                                          '2014-02-06', '2014-02-07', '2014-02-08']);
+    it('rotates the days', function() {
+      var expectedResult = ['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue'];
+      expect(utils.rotateDayNames(dayNames, firstDay)).to.deep.equal(expectedResult);
     });
 
-    it("formats the dates using the given format", function() {
-      expect(utils.dateRange(0, 2, date, 'dd/MM/yyyy')).to.deep.equal(['04/02/2014', '05/02/2014']);
+    it('is does not alter the original array', function() {
+      utils.rotateDayNames(dayNames, firstDay);
+      expect(dayNames).to.deep.equal(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
     });
 
   });
+
+  describe('visibleDates', function() {
+    var date = new Date('2015-01-01'),
+        firstDay = 0;
+
+    it('returns the correct dates', function() {
+      var dates = utils.visibleDates(date, firstDay);
+
+      expect(dates[0]).to.deep.equal(new Date('2014-12-28'));
+      expect(dates[3]).to.deep.equal(new Date('2014-12-31'));
+      expect(dates[4]).to.deep.equal(new Date('2015-01-01'));
+      expect(dates[34]).to.deep.equal(new Date('2015-01-31'));
+      expect(dates[35]).to.deep.equal(new Date('2015-02-01'));
+      expect(dates.slice(-1)[0]).to.deep.equal(new Date('2015-02-07'));
+    });
+
+    it('has 6 rows of dates', function() {
+      expect(utils.visibleDates(date, firstDay).length).to.equal(6 * 7);
+    });
+
+    it('adds 2 extra rows when required', function() {
+      expect(utils.visibleDates(new Date('2015-02-01'), firstDay).length).to.equal(6 * 7);
+    });
+
+    it('works when the first day of the week is monday', function() {
+      var dates = utils.visibleDates(date, 1);
+
+      expect(dates[0]).to.deep.equal(new Date('2014-12-29'));
+      expect(dates[3]).to.deep.equal(new Date('2015-01-01'));
+      expect(dates[33]).to.deep.equal(new Date('2015-01-31'));
+      expect(dates.slice(-1)[0]).to.deep.equal(new Date('2015-02-08'));
+    });
+
+    it('works when the first day of the week is saturday', function() {
+      var dates = utils.visibleDates(date, 6);
+
+      expect(dates[0]).to.deep.equal(new Date('2014-12-27'));
+      expect(dates[5]).to.deep.equal(new Date('2015-01-01'));
+      expect(dates[35]).to.deep.equal(new Date('2015-01-31'));
+      expect(dates.slice(-1)[0]).to.deep.equal(new Date('2015-02-06'));
+    });
+
+  });
+
 });
