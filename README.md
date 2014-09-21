@@ -72,6 +72,14 @@ function MyAppController($scope) {
 }
 ```
 
+#### first-day
+
+Sets the first day of the week. The default is 0 for Sunday.
+
+```html
+<div pickadate first-day="1"></div>
+```
+
 ### I18n
 
 Pickadate uses angular `$locale` module for the date translations. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [http://code.angularjs.org/1.2.0-rc.2/i18n/](http://code.angularjs.org/1.2.0-rc.2/i18n/).
