@@ -82,7 +82,7 @@ Sets the first day of the week. The default is 0 for Sunday.
 
 #### no-extra-rows
 
-The calendar will have between 4 and 6 rows if this attribute is present. By default the calendar will always have 6 rows.
+The calendar will have between 4 and 6 rows if this attribute is present. By default it will always have 6 rows.
 
 ```html
 <div pickadate no-extra-rows></div>

@@ -85,8 +85,7 @@
           minDate: '=',
           maxDate: '=',
           disabledDates: '=',
-          weekStartsOn: '=',
-          noExtraRows: '='
+          weekStartsOn: '='
         },
         template:
           '<div class="pickadate">' +
@@ -125,10 +124,6 @@
 
           if (! angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
             weekStartsOn = 0;
-          }
-
-          if (angular.isDefined(scope.noExtraRows) && ! scope.noExtraRows) {
-            noExtraRows = false;
           }
 
           scope.dayNames    = dateUtils.rotateDayNames($locale.DATETIME_FORMATS.SHORTDAY, weekStartsOn);
