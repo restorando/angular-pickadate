@@ -31,15 +31,15 @@ describe('pickadateUtils', function () {
 
   describe('rotateDayNames', function() {
     var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        firstDay = 3;
+        weekStartsOn = 3;
 
     it('rotates the days', function() {
       var expectedResult = ['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue'];
-      expect(utils.rotateDayNames(dayNames, firstDay)).to.deep.equal(expectedResult);
+      expect(utils.rotateDayNames(dayNames, weekStartsOn)).to.deep.equal(expectedResult);
     });
 
     it('does not alter the original array', function() {
-      utils.rotateDayNames(dayNames, firstDay);
+      utils.rotateDayNames(dayNames, weekStartsOn);
       expect(dayNames).to.deep.equal(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
     });
 
@@ -47,18 +47,18 @@ describe('pickadateUtils', function () {
 
   describe('visibleDates', function() {
     var date,
-        firstDay,
+        weekStartsOn,
         d = function(date) {
           return utils.stringToDate(date);
         };
 
     beforeEach(function() {
       date = d('2015-01-01');
-      firstDay = 0;
+      weekStartsOn = 0;
     });
 
     it('returns the correct dates', function() {
-      var dates = utils.visibleDates(date, firstDay);
+      var dates = utils.visibleDates(date, weekStartsOn);
 
       expect(dates[0]).to.deep.equal(d('2014-12-28'));
       expect(dates[3]).to.deep.equal(d('2014-12-31'));
@@ -69,22 +69,22 @@ describe('pickadateUtils', function () {
     });
 
     it('has 6 rows of dates by default', function() {
-      expect(utils.visibleDates(date, firstDay)).to.have.length(6 * 7);
+      expect(utils.visibleDates(date, weekStartsOn)).to.have.length(6 * 7);
     });
 
     it('should not add empty rows when told not to', function() {
-      expect(utils.visibleDates(date, firstDay, true)).to.have.length(5 * 7);
+      expect(utils.visibleDates(date, weekStartsOn, true)).to.have.length(5 * 7);
     });
 
     it('adds 2 extra rows when required', function() {
       var date = d('2015-02-01');
 
-      expect(utils.visibleDates(date, firstDay, false)).to.have.length(6 * 7);
-      expect(utils.visibleDates(date, firstDay, true )).to.have.length(4 * 7);
-      expect(utils.visibleDates(date, 1,        true )).to.have.length(5 * 7);
+      expect(utils.visibleDates(date, weekStartsOn, false)).to.have.length(6 * 7);
+      expect(utils.visibleDates(date, weekStartsOn, true )).to.have.length(4 * 7);
+      expect(utils.visibleDates(date, 1,            true )).to.have.length(5 * 7);
     });
 
-    it('works when the first day of the week is monday', function() {
+    it('works when the week starts on monday', function() {
       var dates = utils.visibleDates(date, 1);
 
       expect(dates[0]).to.deep.equal(d('2014-12-29'));
@@ -93,7 +93,7 @@ describe('pickadateUtils', function () {
       expect(dates.slice(-1)[0]).to.deep.equal(d('2015-02-08'));
     });
 
-    it('works when the first day of the week is saturday', function() {
+    it('works when the week starts on saturday', function() {
       var dates = utils.visibleDates(date, 6);
 
       expect(dates[0]).to.deep.equal(d('2014-12-27'));

@@ -72,12 +72,12 @@ function MyAppController($scope) {
 }
 ```
 
-#### first-day
+#### week-starts-on
 
 Sets the first day of the week. The default is 0 for Sunday.
 
 ```html
-<div pickadate first-day="1"></div>
+<div pickadate week-starts-on="1"></div>
 ```
 
 #### no-extra-rows

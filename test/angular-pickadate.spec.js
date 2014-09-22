@@ -7,7 +7,7 @@ describe('pickadate', function () {
       $scope,
       $compile,
       html = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
-             'disabled-dates="disabledDates" first-day="firstDay">' +
+             'disabled-dates="disabledDates" week-starts-on="weekStartsOn">' +
              '</div>';
 
   beforeEach(module("pickadate"));
@@ -176,8 +176,8 @@ describe('pickadate', function () {
   describe('Configure the first day of the week', function() {
     var defaultDay;
 
-    var firstCalendarDay = function(firstDay) {
-      $scope.firstDay = firstDay;
+    var firstCalendarDay = function(weekStartsOn) {
+      $scope.weekStartsOn = weekStartsOn;
       compile();
       return $('ul:last-child li:first-child').text();
     };
@@ -187,14 +187,14 @@ describe('pickadate', function () {
     });
 
     it('changes the first day of the week', function() {
-      for (var firstDay = 1; firstDay < 7; firstDay++) {
-        expect(firstCalendarDay(firstDay)).to.not.equal(defaultDay);
+      for (var weekStartsOn = 1; weekStartsOn < 7; weekStartsOn++) {
+        expect(firstCalendarDay(weekStartsOn)).to.not.equal(defaultDay);
       }
     });
 
-    it('sets firstDay to 0 if it is invalid', function() {
-      angular.forEach([7, -1, 'foo'], function(firstDay) {
-        expect(firstCalendarDay(firstDay)).to.equal(defaultDay);
+    it('sets weekStartsOn to 0 if it is invalid', function() {
+      angular.forEach([7, -1, 'foo'], function(weekStartsOn) {
+        expect(firstCalendarDay(weekStartsOn)).to.equal(defaultDay);
       });
     });
 
