@@ -7,7 +7,7 @@ describe('pickadate', function () {
       $scope,
       $compile,
       html = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
-             'disabled-dates="disabledDates">' +
+             'disabled-dates="disabledDates" first-day="firstDay">' +
              '</div>';
 
   beforeEach(module("pickadate"));
@@ -171,6 +171,33 @@ describe('pickadate', function () {
       });
 
     });
+  });
+
+  describe('Configure the first day of the week', function() {
+    var defaultDay;
+
+    var firstCalendarDay = function(firstDay) {
+      $scope.firstDay = firstDay;
+      compile();
+      return $('ul:last-child li:first-child').text();
+    };
+
+    beforeEach(function() {
+      defaultDay = firstCalendarDay(0);
+    });
+
+    it('changes the first day of the week', function() {
+      for (var firstDay = 1; firstDay < 7; firstDay++) {
+        expect(firstCalendarDay(firstDay)).to.not.equal(defaultDay);
+      }
+    });
+
+    it('sets firstDay to 0 if it is invalid', function() {
+      angular.forEach([7, -1, 'foo'], function(firstDay) {
+        expect(firstCalendarDay(firstDay)).to.equal(defaultDay);
+      });
+    });
+
   });
 
 });

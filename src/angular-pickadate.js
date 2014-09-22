@@ -120,8 +120,12 @@
           var minDate       = scope.minDate && dateUtils.stringToDate(scope.minDate),
               maxDate       = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
               disabledDates = scope.disabledDates || [],
-              firstDay      = +scope.firstDay || 0,
+              firstDay      = scope.firstDay || 0,
               currentDate   = (scope.defaultDate && dateUtils.stringToDate(scope.defaultDate)) || new Date();
+
+          if (! angular.isNumber(firstDay) || firstDay < 0 || firstDay > 6) {
+            firstDay = 0;
+          }
 
           scope.dayNames    = dateUtils.rotateDayNames($locale.DATETIME_FORMATS.SHORTDAY, firstDay);
           scope.currentDate = currentDate;
