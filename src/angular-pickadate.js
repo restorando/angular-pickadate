@@ -45,7 +45,7 @@
           return new Date(year, month - 1, day, 3);
         },
 
-        visibleDates: function(date, weekStartsOn, noExtraRows) {
+        buildDates: function(date, weekStartsOn, noExtraRows) {
           var dates = [];
           var lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0, 3);
 
@@ -139,7 +139,7 @@
             initialDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1, 3);
 
             var currentMonth = initialDate.getMonth() + 1,
-                allDates     = dateUtils.visibleDates(initialDate, weekStartsOn, noExtraRows),
+                allDates     = dateUtils.buildDates(initialDate, weekStartsOn, noExtraRows),
                 dates        = [],
                 today        = dateFilter(new Date(), 'yyyy-MM-dd');
 
