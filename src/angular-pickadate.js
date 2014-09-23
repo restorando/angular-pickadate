@@ -45,17 +45,19 @@
           return new Date(year, month - 1, day, 3);
         },
 
-        buildDates: function(date, weekStartsOn, noExtraRows) {
-          var dates = [];
-          var lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0, 3);
+        buildDates: function(date, options) {
+          var dates = [],
+              lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0, 3);
 
+          options = options || {};
           date = new Date(date);
-          while (date.getDay() !== weekStartsOn) {
+
+          while (date.getDay() !== options.weekStartsOn) {
             date.setDate(date.getDate() - 1);
           }
 
           for (var i = 0; i < 42; i++) {  // 42 == 6 rows of dates
-            if (noExtraRows && date.getDay() === weekStartsOn && date > lastDate) break;
+            if (options.noExtraRows && date.getDay() === options.weekStartsOn && date > lastDate) break;
 
             dates.push(new Date(date));
             date.setDate(date.getDate() + 1);
@@ -122,7 +124,7 @@
               noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
               currentDate   = (scope.defaultDate && dateUtils.stringToDate(scope.defaultDate)) || new Date();
 
-          if (! angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
+          if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
             weekStartsOn = 0;
           }
 
@@ -134,7 +136,7 @@
             initialDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1, 3);
 
             var currentMonth = initialDate.getMonth() + 1,
-                allDates     = dateUtils.buildDates(initialDate, weekStartsOn, noExtraRows),
+                allDates     = dateUtils.buildDates(initialDate, { weekStartsOn: weekStartsOn, noExtraRows: noExtraRows }),
                 dates        = [],
                 today        = dateFilter(new Date(), 'yyyy-MM-dd');
 
