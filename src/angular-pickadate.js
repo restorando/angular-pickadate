@@ -28,7 +28,7 @@
       };
     })
 
-    .factory('pickadateUtils', function() {
+    .factory('pickadateUtils', ['$locale', function($locale) {
       return {
         isDate: function(obj) {
           return Object.prototype.toString.call(obj) === '[object Date]';
@@ -66,7 +66,9 @@
           return dates;
         },
 
-        rotateDayNames: function(dayNames, weekStartsOn) {
+        buildDayNames: function(weekStartsOn) {
+          var dayNames = $locale.DATETIME_FORMATS.SHORTDAY;
+
           if (weekStartsOn) {
             dayNames = dayNames.slice(0);
             for (var i = 0; i < weekStartsOn; i++) {
@@ -76,7 +78,7 @@
           return dayNames;
         }
       };
-    })
+    }])
 
     .directive('pickadate', ['$locale', 'pickadateUtils', 'pickadateI18n', 'dateFilter', function($locale, dateUtils, i18n, dateFilter) {
       return {
@@ -128,7 +130,7 @@
             weekStartsOn = 0;
           }
 
-          scope.dayNames    = dateUtils.rotateDayNames($locale.DATETIME_FORMATS.SHORTDAY, weekStartsOn);
+          scope.dayNames    = dateUtils.buildDayNames(weekStartsOn);
           scope.currentDate = currentDate;
           scope.t           = i18n.t;
 

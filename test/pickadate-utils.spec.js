@@ -29,18 +29,19 @@ describe('pickadateUtils', function () {
 
   });
 
-  describe('rotateDayNames', function() {
-    var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        weekStartsOn = 3;
+  describe('buildDayNames', function() {
+
+    it('builds the days', function() {
+      var expectedResult = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      expect(utils.buildDayNames()).to.deep.equal(expectedResult);
+    });
 
     it('rotates the days', function() {
       var expectedResult = ['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue'];
-      expect(utils.rotateDayNames(dayNames, weekStartsOn)).to.deep.equal(expectedResult);
-    });
+      expect(utils.buildDayNames(3)).to.deep.equal(expectedResult);
 
-    it('does not alter the original array', function() {
-      utils.rotateDayNames(dayNames, weekStartsOn);
-      expect(dayNames).to.deep.equal(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
+      expectedResult = ['Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+      expect(utils.buildDayNames(5)).to.deep.equal(expectedResult);
     });
 
   });
