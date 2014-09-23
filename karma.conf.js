@@ -54,7 +54,6 @@ module.exports = {
 
   plugins: [
     'karma-mocha',
-    'karma-chrome-launcher',
     require('karma-phantomjs-launcher'),
     require('karma-chai-plugins')
   ]
