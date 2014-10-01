@@ -99,6 +99,7 @@
             }
           }
           return dayNames;
+        },
 
         toIso: function (date) {
           if (this.isDate(date)) {
@@ -115,7 +116,6 @@
         scope: {
           opts: '=pickadate',
           date: '=ngModel',
-          displayMonth: '=',
           minDate: '=',
           maxDate: '=',
           disabledDates: '=',
@@ -149,10 +149,7 @@
           '</div>',
 
         link: function(scope, element, attrs, ngModel)  {
-          var minDate       = scope.minDate && dateUtils.stringToDate(scope.minDate),
-              maxDate       = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
-              disabledDates = scope.disabledDates || [],
-              weekStartsOn  = scope.weekStartsOn || 0,
+          var weekStartsOn  = scope.weekStartsOn || 0,
               noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
               currentDate   = (scope.displayMonth && dateUtils.stringToDate(scope.displayMonth)) || new Date(),
               defaultOpts   = { clickThroughMonths: false },
@@ -189,11 +186,6 @@
             initialDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1, 3);
 
             var currentMonth    = initialDate.getMonth() + 1,
-              dayCount          = new Date(initialDate.getFullYear(), initialDate.getMonth() + 1, 0, 3).getDate(),
-              prevDates         = dateUtils.dateRange(-initialDate.getDay(), 0, initialDate),
-              currentMonthDates = dateUtils.dateRange(0, dayCount, initialDate),
-              lastDate          = dateUtils.stringToDate(currentMonthDates[currentMonthDates.length - 1]),
-              nextMonthDates    = dateUtils.dateRange(1, 7 - lastDate.getDay(), lastDate),
               allDates          = dateUtils.buildDates(initialDate, { weekStartsOn: weekStartsOn, noExtraRows: noExtraRows }),
               dates             = [],
               today             = dateFilter(new Date(), 'yyyy-MM-dd'),
@@ -219,7 +211,7 @@
               if (date < scope.minDate || date > scope.maxDate || dateFilter(dateObj, 'M') !== currentMonth.toString()) {
                 className = 'pickadate-disabled pickadate-out-of-range';
               } else {
-                if (indexOf.call(scope.disabledDates || [], date) >= 0) {
+                if (indexOf.call(scope.disabledDates, date) >= 0) {
                   className = 'pickadate-disabled pickadate-unavailable';
                 }
                 if (dateFilter(date, 'M') !== currentMonth.toString()) {
@@ -247,7 +239,7 @@
 
           ngModel.$render = function () {
             var date;
-            if ((date = ngModel.$modelValue) && (indexOf.call(scope.disabledDates || [], date) === -1)) {
+            if ((date = ngModel.$modelValue) && (indexOf.call(scope.disabledDates, date) === -1)) {
               scope.currentDate = currentDate = dateUtils.stringToDate(date);
               scope.displayMonth = dateUtils.toIso(currentDate);
             } else if (date) {
@@ -269,7 +261,7 @@
           };
 
           function getMonthDelta(target, current) {
-            var targetMonth = target.getFullYear() * 12 + target.getMonth()
+            var targetMonth = target.getFullYear() * 12 + target.getMonth(),
                 currentMonth = current.getFullYear() * 12 + current.getMonth();
             return targetMonth - currentMonth;
           }
