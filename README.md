@@ -1,4 +1,5 @@
-# angular-pickadate
+# angular-pickadate [![Build Status](https://travis-ci.org/restorando/angular-pickadate.svg?branch=master)](https://travis-ci.org/restorando/angular-pickadate)
+
 
 A simple and fluid inline datepicker for AngularJS with no extra dependencies.
 
@@ -76,6 +77,22 @@ Shows a next/previous year navigation in addition to the current next/previous m
 
 ```html
 <div pickadate show-year-nav="'true'"></div>
+```
+
+#### week-starts-on
+
+Sets the first day of the week. The default is 0 for Sunday.
+
+```html
+<div pickadate week-starts-on="1"></div>
+```
+
+#### no-extra-rows
+
+The calendar will have between 4 and 6 rows if this attribute is present. By default it will always have 6 rows.
+
+```html
+<div pickadate no-extra-rows></div>
 ```
 
 ### I18n

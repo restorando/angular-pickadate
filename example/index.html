@@ -15,23 +15,23 @@
   </head>
   <body ng-app="testApp" id="ng-app" ng-controller="TestController">
     <div class="container">
-      <div pickadate ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates='disabledDates'></div>
+      <div pickadate ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates="disabledDates" week-starts-on="0" no-extra-rows></div>
 
       <div class="selected-date">
         Selected date is {{date || '(no date selected)'}}
       </div>
     </div>
 
-    <script type="text/javascript" src="http://code.angularjs.org/1.2.0-rc.2/angular.min.js"></script>
+    <script type="text/javascript" src="../test/lib/angular.js"></script>
     <script type="text/javascript" src="../src/angular-pickadate.js"></script>
     <script type="text/javascript">
       angular.module('testApp', ['pickadate']);
 
-      function TestController($scope, dateFilter) {
-        $scope.date = '2013-11-26';
-        $scope.minDate = '2013-10-05';
-        $scope.maxDate = '2014-12-04';
-        $scope.disabledDates = ['2013-11-19', '2013-11-30'];
+      function TestController($scope) {
+        $scope.date = '2014-11-26';
+        $scope.minDate = '2014-09-05';
+        $scope.maxDate = '2015-12-04';
+        $scope.disabledDates = ['2014-11-19', '2014-11-30'];
       }
     </script>
   </body>
