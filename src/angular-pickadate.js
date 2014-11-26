@@ -197,6 +197,22 @@
             scope.render(currentDate);
           };
 
+          scope.$watch('minDate', function(value) {
+            if (typeof value === 'undefined') return;
+
+            scope.render(currentDate);
+
+            if (typeof scope.date !== 'undefined' && dateUtils.stringToDate(scope.date).getTime() < dateUtils.stringToDate(value).getTime()) {
+              scope.date = value;
+
+              scope.setDate({
+                date: scope.date
+              });
+
+              scope.currentDate = currentDate = dateUtils.stringToDate(scope.date);
+            }
+          });
+
           function isDateDisabled(dateObj) {
             return (/pickadate-disabled/.test(dateObj.className));
           }
