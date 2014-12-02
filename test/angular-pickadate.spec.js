@@ -19,8 +19,8 @@ describe('pickadate', function () {
     });
   });
 
-  function compile() {
-    element = angular.element(html);
+  function compile(elem) {
+    element = angular.element(elem);
     $compile(element)($scope);
     $scope.$digest();
   }
@@ -34,7 +34,7 @@ describe('pickadate', function () {
     beforeEach(function() {
       $scope.date = '2014-05-17';
       $scope.disabledDates = ['2014-05-26'];
-      compile();
+      compile(html);
     });
 
     it("updates the ngModel value when a date is clicked", function() {
@@ -62,7 +62,7 @@ describe('pickadate', function () {
     beforeEach(function() {
       $scope.date = '2014-05-17';
       $scope.disabledDates = ['2014-05-26'];
-      compile();
+      compile(html);
     });
 
     describe('Selected date', function() {
@@ -94,7 +94,7 @@ describe('pickadate', function () {
 
       beforeEach(function() {
         $scope.disabledDates = ['2014-05-20', '2014-05-26'];
-        compile();
+        compile(html);
       });
 
       it("adds the 'pickadate-unavailable' class to the disabled dates", function() {
@@ -181,12 +181,12 @@ describe('pickadate', function () {
     });
 
     it("renders the current month", function(){
-      compile();
+      compile(html);
       expect($('.pickadate-centered-heading')).to.have.text('May 2014');
     });
 
     it("changes to the previous month", function() {
-      compile();
+      compile(html);
 
       browserTrigger($('.pickadate-prev'), 'click');
       expect($('.pickadate-centered-heading')).to.have.text('April 2014');
@@ -196,7 +196,7 @@ describe('pickadate', function () {
     });
 
     it("changes to the next month", function() {
-      compile();
+      compile(html);
 
       browserTrigger($('.pickadate-next'), 'click');
       expect($('.pickadate-centered-heading')).to.have.text('June 2014');
@@ -209,7 +209,7 @@ describe('pickadate', function () {
 
       it("doesn't render the prev button if prev month < minDate", function() {
         $scope.minDate = '2014-04-04';
-        compile();
+        compile(html);
 
         expect($('.pickadate-prev')).not.to.have.class('ng-hide');
 
@@ -221,7 +221,7 @@ describe('pickadate', function () {
 
       it("doesn't render the next button if next month > maxDate", function() {
         $scope.maxDate = '2014-06-04';
-        compile();
+        compile(html);
 
         expect($('.pickadate-next')).not.to.have.class('ng-hide');
 
@@ -234,7 +234,7 @@ describe('pickadate', function () {
       it("renders the next button if maxDate is set to the beginning of a month", function() {
         $scope.date    = '2014-08-31';
         $scope.maxDate = '2014-09-01';
-        compile();
+        compile(html);
 
         expect($('.pickadate-next')).not.to.have.class('ng-hide');
       });
@@ -247,7 +247,7 @@ describe('pickadate', function () {
 
     var firstCalendarDay = function(weekStartsOn) {
       $scope.weekStartsOn = weekStartsOn;
-      compile();
+      compile(html);
       return $('ul:last-child li:first-child').text();
     };
 
@@ -267,6 +267,25 @@ describe('pickadate', function () {
       });
     });
 
+  });
+
+  describe('Multiple calendars', function() {
+    var htmlMulti = '<div pickadate ng-model="firstDate"></div>' +
+           '<div pickadate ng-model="secondDate" min-date="firstDate"></div>';
+
+    it('observes min-date and update model if value is greater', function() {
+      $scope.firstDate = '2014-01-01';
+      $scope.secondDate = '2014-01-03';
+
+      compile(htmlMulti);
+
+      $scope.firstDate = '2014-01-10';
+
+      $scope.$digest();
+
+      expect($scope.firstDate).to.equal('2014-01-10');
+      expect($scope.secondDate).to.equal('2014-01-10');
+    });
   });
 
 });
