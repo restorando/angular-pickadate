@@ -54,6 +54,7 @@ describe('pickadate', function () {
       $scope.$digest();
       expect($scope.date).to.be.undefined;
     });
+
   });
 
   describe('Rendering', function() {
@@ -99,6 +100,74 @@ describe('pickadate', function () {
       it("adds the 'pickadate-unavailable' class to the disabled dates", function() {
         expect($('li:contains(20)')).to.have.class('pickadate-unavailable');
         expect($('li:contains(26)')).to.have.class('pickadate-unavailable');
+      });
+
+    });
+
+    describe('Watchers', function() {
+
+      describe('Min && max date', function() {
+
+        beforeEach(function() {
+          $scope.minDate = '2014-04-20';
+          $scope.maxDate = '2014-06-20';
+          $scope.date    = '2014-05-17';
+        });
+
+        it("re-renders the calendar if min-date is updated", function() {
+          compile();
+
+          expect($('li:contains(14)')).not.to.have.class('pickadate-disabled');
+
+          $scope.minDate = '2014-05-15';
+          $scope.maxDate = '2014-05-22';
+          $scope.$digest();
+
+          expect($('li:contains(14)')).to.have.attr('class', 'pickadate-disabled');
+          expect($('li:contains(15)')).not.to.have.class('pickadate-disabled');
+        });
+
+        it("re-renders the calendar if max-date is updated", function() {
+          compile();
+
+          expect($('li:contains(23)')).not.to.have.class('pickadate-disabled');
+
+          $scope.maxDate = '2014-05-22';
+          $scope.$digest();
+
+
+          expect($('li:contains(22)')).not.to.have.class('pickadate-disabled');
+          expect($('li:contains(23)')).to.have.attr('class', 'pickadate-disabled');
+        });
+
+        describe('Disabled dates', function() {
+
+          it("re-renders the calendar if disabled-dates is updated", function() {
+            compile();
+            expect($('li:contains(26)')).to.have.class('pickadate-unavailable');
+
+            $scope.disabledDates.pop();
+            $scope.$digest();
+
+            expect($('li:contains(26)')).not.to.have.class('pickadate-unavailable');
+          });
+
+        });
+
+        describe('Week starts on', function() {
+
+          it("re-renders the calendar if week-starts-on is updated", function() {
+            compile();
+            expect($('li.pickadate-head:first')).to.have.text('Sun');
+
+            $scope.weekStartsOn = 3;
+            $scope.$digest();
+
+            expect($('li.pickadate-head:first')).to.have.text('Wed');
+          });
+
+        });
+
       });
 
     });
