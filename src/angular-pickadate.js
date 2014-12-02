@@ -119,43 +119,71 @@
           '</div>',
 
         link: function(scope, element, attrs, ngModel)  {
-          var minDate       = scope.minDate && dateUtils.stringToDate(scope.minDate),
-              maxDate       = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
-              disabledDates = scope.disabledDates || [],
-              weekStartsOn  = scope.weekStartsOn || 0,
-              noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
+          var noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
               currentDate   = (scope.defaultDate && dateUtils.stringToDate(scope.defaultDate)) || new Date();
 
-          if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
-            weekStartsOn = 0;
-          }
-
-          scope.dayNames    = dateUtils.buildDayNames(weekStartsOn);
-          scope.currentDate = currentDate;
           scope.t           = i18n.t;
 
-          scope.render = function(initialDate) {
-            initialDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1, 3);
+          scope.setDate = function(dateObj) {
+            if (isDateDisabled(dateObj)) return;
+            ngModel.$setViewValue(dateObj.date);
+          };
 
-            var currentMonth = initialDate.getMonth() + 1,
-                allDates     = dateUtils.buildDates(initialDate, { weekStartsOn: weekStartsOn, noExtraRows: noExtraRows }),
-                dates        = [],
-                today        = dateFilter(new Date(), 'yyyy-MM-dd');
+          ngModel.$render = function() {
+            var date, weekStartsOn = scope.weekStartsOn;
+
+            if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
+              scope.weekStartsOn = 0;
+            }
+
+            if ((date = ngModel.$modelValue) && (indexOf.call(scope.disabledDates || [], date) === -1)) {
+              scope.currentDate = currentDate = scope.currentDate || dateUtils.stringToDate(date);
+            } else if (date) {
+              // if the initial date set by the user is in the disabled dates list, unset it
+              scope.setDate({});
+            }
+            render();
+          };
+
+          scope.changeMonth = function(offset) {
+            // If the current date is January 31th, setting the month to date.getMonth() + 1
+            // sets the date to March the 3rd, since the date object adds 30 days to the current
+            // date. Settings the date to the 2nd day of the month is a workaround to prevent this
+            // behaviour
+            currentDate.setDate(1);
+            currentDate.setMonth(currentDate.getMonth() + offset);
+            render();
+          };
+
+          // Workaround to watch multiple properties. XXX use $scope.$watchGroup in angular 1.3
+          scope.$watch(function(){
+            return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates, scope.weekStartsOn]);
+          }, ngModel.$render);
+
+          function render() {
+            var initialDate   = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 3),
+                currentMonth  = initialDate.getMonth() + 1,
+                allDates      = dateUtils.buildDates(initialDate, { weekStartsOn: scope.weekStartsOn, noExtraRows: noExtraRows }),
+                dates         = [],
+                today         = dateFilter(new Date(), 'yyyy-MM-dd'),
+                minDate       = scope.minDate && dateUtils.stringToDate(scope.minDate),
+                maxDate       = scope.maxDate && dateUtils.stringToDate(scope.maxDate);
 
             var nextMonthInitialDate = new Date(initialDate);
             nextMonthInitialDate.setMonth(currentMonth);
 
             scope.allowPrevMonth = !minDate || initialDate > minDate;
             scope.allowNextMonth = !maxDate || nextMonthInitialDate <= maxDate;
+            scope.dayNames       = dateUtils.buildDayNames(scope.weekStartsOn);
 
             for (var i = 0; i < allDates.length; i++) {
               var className = "",
                   dateObj   = allDates[i],
                   date      = dateFilter(dateObj, 'yyyy-MM-dd');
 
-              if (date < scope.minDate || date > scope.maxDate || dateFilter(dateObj, 'M') !== currentMonth.toString()) {
+              if (dateObj < minDate || dateObj > maxDate || dateFilter(dateObj, 'M') !== currentMonth.toString()) {
                 className = 'pickadate-disabled';
-              } else if (indexOf.call(disabledDates, date) >= 0) {
+              } else if (indexOf.call(scope.disabledDates || [], date) >= 0) {
                 className = 'pickadate-disabled pickadate-unavailable';
               } else {
                 className = 'pickadate-enabled';
@@ -169,33 +197,7 @@
             }
 
             scope.dates = dates;
-          };
-
-          scope.setDate = function(dateObj) {
-            if (isDateDisabled(dateObj)) return;
-            ngModel.$setViewValue(dateObj.date);
-          };
-
-          ngModel.$render = function () {
-            var date;
-            if ((date = ngModel.$modelValue) && (indexOf.call(disabledDates, date) === -1)) {
-              scope.currentDate = currentDate = dateUtils.stringToDate(date);
-            } else if (date) {
-              // if the initial date set by the user is in the disabled dates list, unset it
-              scope.setDate({});
-            }
-            scope.render(currentDate);
-          };
-
-          scope.changeMonth = function (offset) {
-            // If the current date is January 31th, setting the month to date.getMonth() + 1
-            // sets the date to March the 3rd, since the date object adds 30 days to the current
-            // date. Settings the date to the 2nd day of the month is a workaround to prevent this
-            // behaviour
-            currentDate.setDate(1);
-            currentDate.setMonth(currentDate.getMonth() + offset);
-            scope.render(currentDate);
-          };
+          }
 
           function isDateDisabled(dateObj) {
             return (/pickadate-disabled/.test(dateObj.className));
