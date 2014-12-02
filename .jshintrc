@@ -84,6 +84,7 @@
       "angular"         : true,
       "module"          : true,
       "expect"          : true,
-      "browserTrigger"  : true
+      "browserTrigger"  : true,
+      "sinon"           : true
   }
 }

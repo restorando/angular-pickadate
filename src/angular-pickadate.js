@@ -110,7 +110,7 @@
                   '</li>' +
                 '</ul>' +
                 '<ul class="pickadate-cell">' +
-                  '<li ng-repeat="d in dates" ng-click="setDate(d)" class="{{d.className}}" ng-class="{\'pickadate-active\': date == d.date}">' +
+                  '<li ng-repeat="d in dates" ng-click="setDate(d)" ng-class="d.classNames.concat(date == d.date ? \'pickadate-active\' : null)">' +
                     '{{d.dateObj | date:"d"}}' +
                   '</li>' +
                 '</ul>' +
@@ -119,86 +119,97 @@
           '</div>',
 
         link: function(scope, element, attrs, ngModel)  {
-          var minDate       = scope.minDate && dateUtils.stringToDate(scope.minDate),
-              maxDate       = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
-              disabledDates = scope.disabledDates || [],
-              weekStartsOn  = scope.weekStartsOn || 0,
-              noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
-              currentDate   = (scope.defaultDate && dateUtils.stringToDate(scope.defaultDate)) || new Date();
+          var noExtraRows   = attrs.hasOwnProperty('noExtraRows');
 
-          if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
-            weekStartsOn = 0;
-          }
-
-          scope.dayNames    = dateUtils.buildDayNames(weekStartsOn);
-          scope.currentDate = currentDate;
-          scope.t           = i18n.t;
-
-          scope.render = function(initialDate) {
-            initialDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1, 3);
-
-            var currentMonth = initialDate.getMonth() + 1,
-                allDates     = dateUtils.buildDates(initialDate, { weekStartsOn: weekStartsOn, noExtraRows: noExtraRows }),
-                dates        = [],
-                today        = dateFilter(new Date(), 'yyyy-MM-dd');
-
-            var nextMonthInitialDate = new Date(initialDate);
-            nextMonthInitialDate.setMonth(currentMonth);
-
-            scope.allowPrevMonth = !minDate || initialDate > minDate;
-            scope.allowNextMonth = !maxDate || nextMonthInitialDate <= maxDate;
-
-            for (var i = 0; i < allDates.length; i++) {
-              var className = "",
-                  dateObj   = allDates[i],
-                  date      = dateFilter(dateObj, 'yyyy-MM-dd');
-
-              if (date < scope.minDate || date > scope.maxDate || dateFilter(dateObj, 'M') !== currentMonth.toString()) {
-                className = 'pickadate-disabled';
-              } else if (indexOf.call(disabledDates, date) >= 0) {
-                className = 'pickadate-disabled pickadate-unavailable';
-              } else {
-                className = 'pickadate-enabled';
-              }
-
-              if (date === today) {
-                className += ' pickadate-today';
-              }
-
-              dates.push({date: date, dateObj: dateObj, className: className});
-            }
-
-            scope.dates = dates;
-          };
+          scope.t = i18n.t;
+          scope.currentDate = scope.defaultDate && dateUtils.stringToDate(scope.defaultDate);
 
           scope.setDate = function(dateObj) {
-            if (isDateDisabled(dateObj)) return;
+            if (isOutOfRange(dateObj.dateObj) || isDateDisabled(dateObj.date)) return;
             ngModel.$setViewValue(dateObj.date);
           };
 
-          ngModel.$render = function () {
-            var date;
-            if ((date = ngModel.$modelValue) && (indexOf.call(disabledDates, date) === -1)) {
-              scope.currentDate = currentDate = dateUtils.stringToDate(date);
-            } else if (date) {
-              // if the initial date set by the user is in the disabled dates list, unset it
-              scope.setDate({});
+          ngModel.$render = function() {
+            var date = ngModel.$modelValue,
+                dateObj = date && dateUtils.stringToDate(date),
+                weekStartsOn = scope.weekStartsOn;
+
+            scope.currentDate = scope.currentDate || dateObj;
+            scope.minDate     = scope.minDate && dateUtils.stringToDate(scope.minDate) || new Date(0);
+            scope.maxDate     = scope.maxDate && dateUtils.stringToDate(scope.maxDate) || new Date(99999999999999);
+
+            if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
+              scope.weekStartsOn = 0;
             }
-            scope.render(currentDate);
+
+            // if the initial date set by the user is in the disabled dates list, unset it
+            if (date && (isDateDisabled(date) || isOutOfRange(dateObj))) {
+              ngModel.$setViewValue(undefined);
+            }
+
+            render();
           };
 
-          scope.changeMonth = function (offset) {
+          scope.changeMonth = function(offset) {
             // If the current date is January 31th, setting the month to date.getMonth() + 1
             // sets the date to March the 3rd, since the date object adds 30 days to the current
             // date. Settings the date to the 2nd day of the month is a workaround to prevent this
             // behaviour
-            currentDate.setDate(1);
-            currentDate.setMonth(currentDate.getMonth() + offset);
-            scope.render(currentDate);
+            scope.currentDate.setDate(1);
+            scope.currentDate.setMonth(scope.currentDate.getMonth() + offset);
+            render();
           };
 
-          function isDateDisabled(dateObj) {
-            return (/pickadate-disabled/.test(dateObj.className));
+          // Workaround to watch multiple properties. XXX use $scope.$watchGroup in angular 1.3
+          scope.$watch(function(){
+            return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates, scope.weekStartsOn]);
+          }, ngModel.$render);
+
+          if (!scope.date) {
+            scope.setDate({date: dateFilter(new Date(), 'yyyy-MM-dd')});
+          }
+
+          function render() {
+            var initialDate   = new Date(scope.currentDate.getFullYear(), scope.currentDate.getMonth(), 1, 3),
+                currentMonth  = initialDate.getMonth() + 1,
+                allDates      = dateUtils.buildDates(initialDate, { weekStartsOn: scope.weekStartsOn, noExtraRows: noExtraRows }),
+                dates         = [],
+                today         = dateFilter(new Date(), 'yyyy-MM-dd');
+
+            var nextMonthInitialDate = new Date(initialDate);
+            nextMonthInitialDate.setMonth(currentMonth);
+
+            scope.allowPrevMonth = !scope.minDate || initialDate > scope.minDate;
+            scope.allowNextMonth = !scope.maxDate || nextMonthInitialDate <= scope.maxDate;
+            scope.dayNames       = dateUtils.buildDayNames(scope.weekStartsOn);
+
+            for (var i = 0; i < allDates.length; i++) {
+              var classNames = [],
+                  dateObj    = allDates[i],
+                  date       = dateFilter(dateObj, 'yyyy-MM-dd'),
+                  isDisabled = isDateDisabled(date);
+
+              if (isOutOfRange(dateObj) || isDisabled) {
+                classNames.push('pickadate-disabled');
+              } else {
+                classNames.push('pickadate-enabled');
+              }
+
+              if (isDisabled)     classNames.push('pickadate-unavailable');
+              if (date === today) classNames.push('pickadate-today');
+
+              dates.push({date: date, dateObj: dateObj, classNames: classNames});
+            }
+
+            scope.dates = dates;
+          }
+
+          function isOutOfRange(date) {
+            return date < scope.minDate || date > scope.maxDate || dateFilter(date, 'M') !== dateFilter(scope.currentDate, 'M');
+          }
+
+          function isDateDisabled(date) {
+            return indexOf.call(scope.disabledDates || [], date) >= 0;
           }
         }
       };
