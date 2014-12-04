@@ -15,10 +15,18 @@
   </head>
   <body ng-app="testApp" id="ng-app" ng-controller="TestController">
     <div class="container">
-      <div pickadate ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates="disabledDates" week-starts-on="0" no-extra-rows></div>
+      <div pickadate="opts" ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates="disabledDates" week-starts-on="0" display-month="presetDate" no-extra-rows></div>
 
       <div class="selected-date">
         Selected date is {{date || '(no date selected)'}}
+      </div>
+
+      <div>
+        <button ng-click="toggleClickThrough()">Toggle Selecting Other Months</button>
+        <button ng-click="newBadDates()">New Bad Dates</button>
+        <button ng-click="newMinMax()">New Min/Max</button>
+        <button ng-click="refresh()">Refresh</button>
+        <button ng-click="setToCurrent()">Current Month</button>
       </div>
     </div>
 
@@ -27,11 +35,32 @@
     <script type="text/javascript">
       angular.module('testApp', ['pickadate']);
 
-      function TestController($scope) {
-        $scope.date = '2014-11-26';
+      function TestController($scope, dateFilter) {
+        $scope.date = void 0;
+        $scope.presetDate = '2014-10-01'
         $scope.minDate = '2014-09-05';
         $scope.maxDate = '2015-12-04';
         $scope.disabledDates = ['2014-11-19', '2014-11-30'];
+        $scope.opts = {
+          clickThroughMonths: true
+        };
+        $scope.toggleClickThrough = function () {
+          $scope.opts.clickThroughMonths = !$scope.opts.clickThroughMonths;
+        };
+        $scope.newBadDates = function () {
+          $scope.disabledDates = ['2014-03-14', '2014-03-15'];
+        };
+        $scope.newMinMax = function () {
+          $scope.minDate = '2014-03-01';
+          $scope.maxDate = '2014-04-30';
+        };
+        $scope.refresh = function () {
+          var d = $scope.presetDate;
+          $scope.presetDate = d.slice(0, -2) + (d.slice(-1) === '1' ? '02' : '01');
+        };
+        $scope.setToCurrent = function () {
+          $scope.presetDate = dateFilter(new Date(), 'yyyy-MM-dd');
+        }
       }
     </script>
   </body>
