@@ -71,6 +71,13 @@ function MyAppController($scope) {
     $scope.presetDate = '2013-12-01';
 }
 ```
+#### show-year-nav
+
+Shows a next/previous year navigation in addition to the current next/previous month.
+
+```html
+<div pickadate show-year-nav="'true'"></div>
+```
 
 #### week-starts-on
 
