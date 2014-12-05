@@ -6,11 +6,16 @@ describe('pickadate', function () {
   var element,
       $scope,
       $compile,
+      pickadateI18nProvider,
       html = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
              'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate">' +
              '</div>';
 
-  beforeEach(module("pickadate"));
+  beforeEach(module('pickadate'));
+
+  beforeEach(module(function(_pickadateI18nProvider_) {
+    pickadateI18nProvider = _pickadateI18nProvider_;
+  }));
 
   beforeEach(function() {
     inject(function($rootScope, _$compile_){
@@ -311,6 +316,36 @@ describe('pickadate', function () {
       compile();
 
       expect($('.pickadate-centered-heading')).to.have.text('August 2014');
+    });
+
+  });
+
+  describe('Translations', function() {
+
+    it('uses the default translations if not translations are specified', function() {
+      compile();
+      expect($('.pickadate-prev')).to.have.text('prev');
+      expect($('.pickadate-next')).to.have.text('next');
+    });
+
+    it('uses the translations previously set in the pickadateI18nProvider', function() {
+      pickadateI18nProvider.translations = {
+        prev: 'ant',
+        next: 'sig'
+      };
+      compile();
+      expect($('.pickadate-prev')).to.have.text('ant');
+      expect($('.pickadate-next')).to.have.text('sig');
+    });
+
+    it('accepts valid html translations', function() {
+      pickadateI18nProvider.translations = {
+        prev: '<i class="icon-chevron-left"></i> ant',
+        next: 'sig <i class="icon-chevron-right"></i>'
+      };
+      compile();
+      expect($('.pickadate-prev')).to.have.html('<i class="icon-chevron-left"></i> ant');
+      expect($('.pickadate-next')).to.have.html('sig <i class="icon-chevron-right"></i>');
     });
 
   });
