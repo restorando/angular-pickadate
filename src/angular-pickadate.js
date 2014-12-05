@@ -80,7 +80,7 @@
       };
     }])
 
-    .directive('pickadate', ['$locale', '$sce', pickadateUtils', 'pickadateI18n', 'dateFilter'], function($locale, $sce, dateUtils, i18n, dateFilter) {
+    .directive('pickadate', ['$locale', '$sce', 'pickadateUtils', 'pickadateI18n', 'dateFilter', function($locale, $sce, dateUtils, i18n, dateFilter) {
       return {
         require: 'ngModel',
         scope: {
