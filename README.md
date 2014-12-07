@@ -88,6 +88,14 @@ The calendar will have between 4 and 6 rows if this attribute is present. By def
 <div pickadate no-extra-rows></div>
 ```
 
+#### multiple
+
+The calendar will support selecting multiple dates. NgModel will be set as an array of date strings
+
+```html
+<div pickadate multiple></div>
+```
+
 ### I18n & Icons
 
 Pickadate uses angular `$locale` module for the date translations. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [https://code.angularjs.org/1.3.0/i18n/](https://code.angularjs.org/1.3.0/i18n/).

@@ -8,8 +8,8 @@ describe('pickadate', function () {
       $compile,
       pickadateI18nProvider,
       defaultHtml = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
-             'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate">' +
-             '</div>';
+                      'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate">' +
+                    '</div>';
 
   beforeEach(module('pickadate'));
 
@@ -342,6 +342,76 @@ describe('pickadate', function () {
       expect(function(){
         compile('<div pickadate ng-model="date"></div>');
       }).not.to.throw();
+
+    });
+
+  });
+
+  describe('Multiple dates', function() {
+
+    beforeEach(function() {
+      this.clock = sinon.useFakeTimers(1431025777408);
+      compile('<div pickadate ng-model="date" multiple disabled-dates="disabledDates"></div>');
+    });
+
+    afterEach(function() {
+      this.clock.restore();
+    });
+
+    it('sets the current ngModel to an empty array if its undefined', function() {
+      expect($scope.date).to.be.empty;
+    });
+
+    it('adds the selected date to the ngModel array', function() {
+      browserTrigger($('.pickadate-enabled:contains(20)'), 'click');
+      browserTrigger($('.pickadate-enabled:contains(22)'), 'click');
+      expect($scope.date).to.deep.equal(['2015-05-20', '2015-05-22']);
+    });
+
+    it('removes the selected date of the ngModel array if it was previously selected', function() {
+      browserTrigger($('.pickadate-enabled:contains(7)'), 'click');
+      expect($scope.date).to.deep.equal(['2015-05-07']);
+
+      browserTrigger($('.pickadate-enabled:contains(7)'), 'click');
+      expect($scope.date).to.be.empty;
+    });
+
+    describe('Rendering', function() {
+
+      it('renders the multiple dates', function() {
+        $scope.date = ['2015-05-07', '2015-05-10', '2015-05-13'];
+        $scope.$digest();
+
+        expect($('.pickadate-active').get()).to.have.length(3);
+        expect($('.pickadate-active:eq(0)')).to.have.text('7');
+        expect($('.pickadate-active:eq(1)')).to.have.text('10');
+        expect($('.pickadate-active:eq(2)')).to.have.text('13');
+      });
+
+    });
+
+    describe('Disabled dates', function() {
+
+      it("removes the disabled dates from the initial date array", function() {
+        $scope.date = ['2015-05-07', '2015-05-10', '2015-05-13'];
+        $scope.disabledDates = ['2015-05-10'];
+        $scope.$digest();
+
+        expect($('.pickadate-active').get()).to.have.length(2);
+        expect($('.pickadate-active:eq(0)')).to.have.text('7');
+        expect($('.pickadate-active:eq(1)')).to.have.text('13');
+      });
+
+      it("removes the disabled date if the ngModel is updated and contains disabled dates", function() {
+        $scope.disabledDates = ['2015-05-10', '2015-05-13'];
+        $scope.$digest();
+
+        $scope.date = ['2015-05-07', '2015-05-10', '2015-05-13'];
+        $scope.$digest();
+
+        expect($('.pickadate-active').get()).to.have.length(1);
+        expect($('.pickadate-active:eq(0)')).to.have.text('7');
+      });
 
     });
 
