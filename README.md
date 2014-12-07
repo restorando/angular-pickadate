@@ -88,9 +88,9 @@ The calendar will have between 4 and 6 rows if this attribute is present. By def
 <div pickadate no-extra-rows></div>
 ```
 
-### I18n
+### I18n & Icons
 
-Pickadate uses angular `$locale` module for the date translations. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [http://code.angularjs.org/1.2.0-rc.2/i18n/](http://code.angularjs.org/1.2.0-rc.2/i18n/).
+Pickadate uses angular `$locale` module for the date translations. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [https://code.angularjs.org/1.3.0/i18n/](https://code.angularjs.org/1.3.0/i18n/).
 
 For the remaining translations you can configure the `pickadateI18nProvider`.
 
@@ -99,8 +99,8 @@ angular.module('testApp', ['pickadate'])
 
     .config(function(pickadateI18nProvider) {
         pickadateI18nProvider.translations = {
-            prev: 'ant',
-            next: 'sig'
+            prev: '<i class="icon-chevron-left"></i> ant',
+            next: 'sig <i class="icon-chevron-right"></i>'
         }
     });
 ```
