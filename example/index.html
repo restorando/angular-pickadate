@@ -22,17 +22,16 @@
       </div>
     </div>
 
-    <script type="text/javascript" src="../test/lib/angular.js"></script>
+    <script type="text/javascript" src="../test/lib/angular-1.3.6.js"></script>
     <script type="text/javascript" src="../src/angular-pickadate.js"></script>
     <script type="text/javascript">
-      angular.module('testApp', ['pickadate']);
-
-      function TestController($scope) {
-        $scope.date = '2014-11-26';
-        $scope.minDate = '2014-09-05';
-        $scope.maxDate = '2015-12-04';
-        $scope.disabledDates = ['2014-11-19', '2014-11-30'];
-      }
+      angular.module('testApp', ['pickadate'])
+        .controller('TestController', function($scope) {
+          $scope.date = '2014-11-26';
+          $scope.minDate = '2014-09-05';
+          $scope.maxDate = '2015-12-04';
+          $scope.disabledDates = ['2014-11-19', '2014-11-30'];
+      });
     </script>
   </body>
 </html>
