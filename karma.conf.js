@@ -16,8 +16,7 @@ module.exports = {
 
   // list of files / patterns to load in the browser
   files: [
-    'test/lib/angular.js',
-    'test/lib/*.js',
+    'test/lib/browser_trigger.js',
     'src/angular-pickadate.js',
     'node_modules/jquery/dist/jquery.js',
     'test/**/*.spec.js'
