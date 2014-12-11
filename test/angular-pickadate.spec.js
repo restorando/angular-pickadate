@@ -7,7 +7,7 @@ describe('pickadate', function () {
       $scope,
       $compile,
       pickadateI18nProvider,
-      html = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
+      defaultHtml = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
              'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate">' +
              '</div>';
 
@@ -24,8 +24,8 @@ describe('pickadate', function () {
     });
   });
 
-  function compile() {
-    element = angular.element(html);
+  function compile(html) {
+    element = angular.element(html || defaultHtml);
     $compile(element)($scope);
     $scope.$digest();
   }
@@ -332,6 +332,17 @@ describe('pickadate', function () {
       compile();
       expect($('.pickadate-prev')).to.have.html('<i class="icon-chevron-left"></i> ant');
       expect($('.pickadate-next')).to.have.html('sig <i class="icon-chevron-right"></i>');
+    });
+
+  });
+
+  describe('Using only required scope properties', function() {
+
+    it("doesn't throw an error if only the required scope properties are being binded", function() {
+      expect(function(){
+        compile('<div pickadate ng-model="date"></div>');
+      }).not.to.throw();
+
     });
 
   });
