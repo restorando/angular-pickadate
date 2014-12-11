@@ -168,20 +168,6 @@ describe('pickadate', function () {
 
       });
 
-      describe('Week starts on', function() {
-
-        it("re-renders the calendar if week-starts-on is updated", function() {
-          compile();
-          expect($('li.pickadate-head:first')).to.have.text('Sun');
-
-          $scope.weekStartsOn = 3;
-          $scope.$digest();
-
-          expect($('li.pickadate-head:first')).to.have.text('Wed');
-        });
-
-      });
-
     });
 
   });
