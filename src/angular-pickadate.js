@@ -123,10 +123,16 @@
           '</div>',
 
         link: function(scope, element, attrs, ngModel)  {
-          var noExtraRows   = attrs.hasOwnProperty('noExtraRows');
+          var minDate,
+              maxDate,
+              noExtraRows = attrs.hasOwnProperty('noExtraRows'),
+              weekStartsOn = scope.weekStartsOn;
 
-          scope.t = i18n.t;
           scope.currentDate = scope.defaultDate && dateUtils.stringToDate(scope.defaultDate);
+
+          if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
+            weekStartsOn = 0;
+          }
 
           scope.setDate = function(dateObj) {
             if (isOutOfRange(dateObj.dateObj) || isDateDisabled(dateObj.date)) return;
@@ -135,16 +141,12 @@
 
           ngModel.$render = function() {
             var date = ngModel.$modelValue,
-                dateObj = date && dateUtils.stringToDate(date),
-                weekStartsOn = scope.weekStartsOn;
+                dateObj = date && dateUtils.stringToDate(date);
 
             scope.currentDate = scope.currentDate || dateObj;
-            scope.minDate     = scope.minDate && dateUtils.stringToDate(scope.minDate) || new Date(0);
-            scope.maxDate     = scope.maxDate && dateUtils.stringToDate(scope.maxDate) || new Date(99999999999999);
 
-            if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
-              scope.weekStartsOn = 0;
-            }
+            minDate = scope.minDate && dateUtils.stringToDate(scope.minDate) || new Date(0);
+            maxDate = scope.maxDate && dateUtils.stringToDate(scope.maxDate) || new Date(99999999999999);
 
             // if the initial date set by the user is in the disabled dates list, unset it
             if (date && (isDateDisabled(date) || isOutOfRange(dateObj))) {
@@ -166,7 +168,7 @@
 
           // Workaround to watch multiple properties. XXX use $scope.$watchGroup in angular 1.3
           scope.$watch(function(){
-            return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates, scope.weekStartsOn]);
+            return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates]);
           }, ngModel.$render);
 
           if (!scope.date) {
@@ -176,16 +178,16 @@
           function render() {
             var initialDate   = new Date(scope.currentDate.getFullYear(), scope.currentDate.getMonth(), 1, 3),
                 currentMonth  = initialDate.getMonth() + 1,
-                allDates      = dateUtils.buildDates(initialDate, { weekStartsOn: scope.weekStartsOn, noExtraRows: noExtraRows }),
+                allDates      = dateUtils.buildDates(initialDate, { weekStartsOn: weekStartsOn, noExtraRows: noExtraRows }),
                 dates         = [],
                 today         = dateFilter(new Date(), 'yyyy-MM-dd');
 
             var nextMonthInitialDate = new Date(initialDate);
             nextMonthInitialDate.setMonth(currentMonth);
 
-            scope.allowPrevMonth = !scope.minDate || initialDate > scope.minDate;
-            scope.allowNextMonth = !scope.maxDate || nextMonthInitialDate <= scope.maxDate;
-            scope.dayNames       = dateUtils.buildDayNames(scope.weekStartsOn);
+            scope.allowPrevMonth = !minDate || initialDate > minDate;
+            scope.allowNextMonth = !maxDate || nextMonthInitialDate <= maxDate;
+            scope.dayNames       = dateUtils.buildDayNames(weekStartsOn);
 
             for (var i = 0; i < allDates.length; i++) {
               var classNames = [],
@@ -209,7 +211,7 @@
           }
 
           function isOutOfRange(date) {
-            return date < scope.minDate || date > scope.maxDate || dateFilter(date, 'M') !== dateFilter(scope.currentDate, 'M');
+            return date < minDate || date > maxDate || dateFilter(date, 'M') !== dateFilter(scope.currentDate, 'M');
           }
 
           function isDateDisabled(date) {
