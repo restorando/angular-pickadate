@@ -28,6 +28,8 @@
     "test",
     "example",
     "package.json",
-    "gulpfile.js"
+    "gulpfile.js",
+    "karma.conf.js",
+    "LICENSE"
   ]
 }
