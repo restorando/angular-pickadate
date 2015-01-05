@@ -1,6 +1,7 @@
 /* jshint strict: false, node: true */
 
 var gulp = require('gulp');
+var sass = require('gulp-sass');
 var _ = require('lodash');
 var karma = require('karma').server;
 var karmaConf = require('./karma.conf');
@@ -12,6 +13,12 @@ var karmaConfFor = function(version) {
   conf.files.unshift('test/lib/angular-*' + version + '.js');
   return conf;
 };
+
+gulp.task('sass', function () {
+  gulp.src('./src/*.scss')
+    .pipe(sass({ errLogToConsole: true }))
+    .pipe(gulp.dest('./lib'));
+});
 
 gulp.task('lint', function() {
   return gulp.src('./**/*pickadate*.js')

@@ -24,6 +24,7 @@
   "devDependencies": {
     "gulp": "^3.8.7",
     "gulp-jshint": "^1.8.4",
+    "gulp-sass": "^1.2.4",
     "jquery": "^2.1.1",
     "karma": "^0.12.19",
     "karma-chai-plugins": "^0.2.3",
