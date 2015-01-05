@@ -2,6 +2,9 @@
 
 var gulp = require('gulp');
 var sass = require('gulp-sass');
+var uglify = require('gulp-uglify');
+var rename = require("gulp-rename");
+var del = require("del");
 var _ = require('lodash');
 var karma = require('karma').server;
 var karmaConf = require('./karma.conf');
@@ -14,6 +17,22 @@ var karmaConfFor = function(version) {
   return conf;
 };
 
+gulp.task('clean', function(done) {
+  del('lib/*', done);
+});
+
+gulp.task('dist', ['uglify', 'sass'], function() {
+  return gulp.src('./src/*.js')
+    .pipe(gulp.dest('./lib'));
+});
+
+gulp.task('uglify', function() {
+  gulp.src('./src/*.js')
+    .pipe(uglify())
+    .pipe(rename({suffix: '.min'}))
+    .pipe(gulp.dest('./lib'));
+});
+
 gulp.task('sass', function () {
   gulp.src('./src/*.scss')
     .pipe(sass({ errLogToConsole: true }))
@@ -21,7 +40,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('lint', function() {
-  return gulp.src('./**/*pickadate*.js')
+  return gulp.src('./src/angular-pickadate.js')
     .pipe(jshint())
     .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'));
