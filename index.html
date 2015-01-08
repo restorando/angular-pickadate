@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>angular-pickadate by restorando</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>angular-pickadate</h1>
+        <h2>A simple and fluid inline datepicker for AngularJS with no extra dependencies.</h2>
+        <a href="https://github.com/restorando/angular-pickadate" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="angular-pickadate-" class="anchor" href="#angular-pickadate-" aria-hidden="true"><span class="octicon octicon-link"></span></a>angular-pickadate <a href="https://travis-ci.org/restorando/angular-pickadate"><img src="https://travis-ci.org/restorando/angular-pickadate.svg?branch=master" alt="Build Status"></a>
+</h1>
+
+<p>A simple and fluid inline datepicker for AngularJS with no extra dependencies.</p>
+
+<p><img src="http://img.ctrlv.in/img/5294e96436552.jpg" alt="pickadate"></p>
+
+<h3>
+<a id="demo" class="anchor" href="#demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo</h3>
+
+<p><a href="http://embed.plnkr.co/gXP8xdsdP9nJIr0fi1RQ/preview" target="_blank">View demo in a new window</a></p>
+
+<h3>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h3>
+
+<p>1) Add the <code>pickadate</code> module to your dependencies</p>
+
+<div class="highlight highlight-javascript"><pre>angular.module(<span class="pl-s1"><span class="pl-pds">'</span>myApp<span class="pl-pds">'</span></span>, [<span class="pl-s1"><span class="pl-pds">'</span>pickadate<span class="pl-pds">'</span></span>]);</pre></div>
+
+<p>2) Use the <code>pickadate</code> directive in any element</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">pickadate</span> <span class="pl-e">ng-model</span>=<span class="pl-s1"><span class="pl-pds">"</span>date<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<p>Pickadate is fluid, so it will take the width of the parent container.</p>
+
+<h3>
+<a id="pickadate-options" class="anchor" href="#pickadate-options" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pickadate options</h3>
+
+<h4>
+<a id="min-date-max-date" class="anchor" href="#min-date-max-date" aria-hidden="true"><span class="octicon octicon-link"></span></a>min-date, max-date</h4>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">pickadate</span> <span class="pl-e">ng-model</span>=<span class="pl-s1"><span class="pl-pds">"</span>date<span class="pl-pds">"</span></span> <span class="pl-e">min-date</span>=<span class="pl-s1"><span class="pl-pds">"</span>minDate<span class="pl-pds">"</span></span> <span class="pl-e">max-date</span>=<span class="pl-s1"><span class="pl-pds">"</span>maxDate<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-st">function</span> <span class="pl-en">MyAppController</span>(<span class="pl-vpf">$scope</span>) {
+    $scope.minDate <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">'</span>2013-11-10<span class="pl-pds">'</span></span>;
+    $scope.maxDate <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">'</span>2013-12-31<span class="pl-pds">'</span></span>;
+}</pre></div>
+
+<p><code>min-date</code> and <code>max-date</code> take angular expressions, so if you want to specify the values inline, don't forget the quotes!</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">pickadate</span> <span class="pl-e">ng-model</span>=<span class="pl-s1"><span class="pl-pds">"</span>date<span class="pl-pds">"</span></span> <span class="pl-e">min-date</span>=<span class="pl-s1"><span class="pl-pds">"</span>'2013-11-10'<span class="pl-pds">"</span></span> <span class="pl-e">max-date</span>=<span class="pl-s1"><span class="pl-pds">"</span>'2013-12-31'<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<h4>
+<a id="disabled-dates" class="anchor" href="#disabled-dates" aria-hidden="true"><span class="octicon octicon-link"></span></a>disabled-dates</h4>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">pickadate</span> <span class="pl-e">ng-model</span>=<span class="pl-s1"><span class="pl-pds">"</span>date<span class="pl-pds">"</span></span> <span class="pl-e">disabled-dates</span>=<span class="pl-s1"><span class="pl-pds">"</span>disabledDates<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-st">function</span> <span class="pl-en">MyAppController</span>(<span class="pl-vpf">$scope</span>) {
+    $scope.disabledDates <span class="pl-k">=</span> [<span class="pl-s1"><span class="pl-pds">'</span>2013-11-10<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>2013-11-15<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>2013-11-19<span class="pl-pds">'</span></span>];
+}</pre></div>
+
+<h4>
+<a id="default-date" class="anchor" href="#default-date" aria-hidden="true"><span class="octicon octicon-link"></span></a>default-date</h4>
+
+<p>Allows you to preset the calendar to a particular month without setting the chosen date.</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">pickadate</span> <span class="pl-e">default-date</span>=<span class="pl-s1"><span class="pl-pds">"</span>presetDate<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-st">function</span> <span class="pl-en">MyAppController</span>(<span class="pl-vpf">$scope</span>) {
+    $scope.presetDate <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">'</span>2013-12-01<span class="pl-pds">'</span></span>;
+}</pre></div>
+
+<h4>
+<a id="week-starts-on" class="anchor" href="#week-starts-on" aria-hidden="true"><span class="octicon octicon-link"></span></a>week-starts-on</h4>
+
+<p>Sets the first day of the week. The default is 0 for Sunday.</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">pickadate</span> <span class="pl-e">week-starts-on</span>=<span class="pl-s1"><span class="pl-pds">"</span>1<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<h4>
+<a id="no-extra-rows" class="anchor" href="#no-extra-rows" aria-hidden="true"><span class="octicon octicon-link"></span></a>no-extra-rows</h4>
+
+<p>The calendar will have between 4 and 6 rows if this attribute is present. By default it will always have 6 rows.</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">pickadate</span> <span class="pl-e">no-extra-rows</span>&gt;&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<h4>
+<a id="multiple" class="anchor" href="#multiple" aria-hidden="true"><span class="octicon octicon-link"></span></a>multiple</h4>
+
+<p>The calendar will support selecting multiple dates. NgModel will be set as an array of date strings</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">pickadate</span> <span class="pl-e">multiple</span>&gt;&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<h3>
+<a id="i18n--icons" class="anchor" href="#i18n--icons" aria-hidden="true"><span class="octicon octicon-link"></span></a>I18n &amp; Icons</h3>
+
+<p>Pickadate uses angular <code>$locale</code> module for the date translations. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: <a href="https://code.angularjs.org/1.3.0/i18n/">https://code.angularjs.org/1.3.0/i18n/</a>.</p>
+
+<p>For the remaining translations you can configure the <code>pickadateI18nProvider</code>.</p>
+
+<div class="highlight highlight-javascript"><pre>angular.module(<span class="pl-s1"><span class="pl-pds">'</span>testApp<span class="pl-pds">'</span></span>, [<span class="pl-s1"><span class="pl-pds">'</span>pickadate<span class="pl-pds">'</span></span>])
+
+    .config(<span class="pl-st">function</span>(<span class="pl-vpf">pickadateI18nProvider</span>) {
+        pickadateI18nProvider.translations <span class="pl-k">=</span> {
+            prev<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>&lt;i class="icon-chevron-left"&gt;&lt;/i&gt; ant<span class="pl-pds">'</span></span>,
+            next<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>sig &lt;i class="icon-chevron-right"&gt;&lt;/i&gt;<span class="pl-pds">'</span></span>
+        }
+    });</pre></div>
+
+<p>The translations can contain custom html code, useful to include custom icons in the calendar controls.</p>
+
+<h3>
+<a id="future-development" class="anchor" href="#future-development" aria-hidden="true"><span class="octicon octicon-link"></span></a>Future development</h3>
+
+<p>Currently <code>pickadate</code> only works as an inline datepicker, but would like it to make it work in any text input as an overlay like the <code>jquery-ui</code> one. Will be happy to merge your pull requests.</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Copyright (c) 2013 Restorando</p>
+
+<p>MIT License</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/restorando/angular-pickadate/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/restorando/angular-pickadate/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/restorando/angular-pickadate"></a> is maintained by <a href="https://github.com/restorando">restorando</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-58400204-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
