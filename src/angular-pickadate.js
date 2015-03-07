@@ -84,7 +84,6 @@
       return {
         require: 'ngModel',
         scope: {
-          date: '=ngModel',
           defaultDate: '=',
           minDate: '=',
           maxDate: '=',
