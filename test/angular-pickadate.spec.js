@@ -6,6 +6,7 @@ describe('pickadate', function () {
   var element,
       $scope,
       $compile,
+      $document,
       pickadateI18nProvider,
       defaultHtml = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
                       'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate">' +
@@ -18,9 +19,10 @@ describe('pickadate', function () {
   }));
 
   beforeEach(function() {
-    inject(function($rootScope, _$compile_){
+    inject(function($rootScope, _$compile_, _$document_){
       $scope = $rootScope.$new();
       $compile = _$compile_;
+      $document = _$document_;
     });
   });
 
@@ -71,6 +73,10 @@ describe('pickadate', function () {
     });
 
     describe('Selected date', function() {
+
+      it("doesn't add the pickadate-modal class", function() {
+        expect($('.pickadate')).not.to.have.class('pickadate-modal');
+      });
 
       it("adds the 'pickadate-active' class for the selected date", function() {
         expect($('.pickadate-active')).to.have.text('17');
@@ -413,6 +419,77 @@ describe('pickadate', function () {
         expect($('.pickadate-active:eq(0)')).to.have.text('7');
       });
 
+    });
+
+  });
+
+  describe('Modal', function() {
+
+    var inputHtml = '<input pickadate ng-model="date" type="text"></input>',
+        input;
+
+    beforeEach(function() {
+      $scope.date = '2014-05-17';
+      compile(inputHtml);
+      input   = element;
+      element = jQuery(element).siblings().first();
+    });
+
+    it('adds the pickadate-modal class', function() {
+      expect(element).to.have.class('pickadate-modal');
+    });
+
+    it('renders the datepicker already hidden', function() {
+      expect(element).to.have.class('ng-hide');
+    });
+
+    it('displays the datepicker when the input is focused', function() {
+      browserTrigger(input, 'focus');
+      expect(element).not.to.have.class('ng-hide');
+    });
+
+    it('hides the datepicker when the user clicks outside the datepicker', function() {
+      expect(element).to.have.class('ng-hide');
+
+      browserTrigger(input, 'focus');
+      expect(element).not.to.have.class('ng-hide');
+
+      browserTrigger(document.body, 'click');
+      expect(element).to.have.class('ng-hide');
+    });
+
+    it("doesn't hide the datepicker if the calendar is clicked", function() {
+      expect(element).to.have.class('ng-hide');
+
+      browserTrigger(input, 'focus');
+      expect(element).not.to.have.class('ng-hide');
+
+      browserTrigger($('.pickadate-centered-heading'), 'click');
+      expect(element).not.to.have.class('ng-hide');
+    });
+
+    it("hides the datepicker if a date is selected", function() {
+      expect(element).to.have.class('ng-hide');
+
+      browserTrigger(input, 'focus');
+      expect(element).not.to.have.class('ng-hide');
+
+      browserTrigger($('.pickadate-enabled:first'), 'click');
+      expect(element).to.have.class('ng-hide');
+    });
+
+    it('sets the input value with the ng-model value', function() {
+      expect(input).to.have.value('2014-05-17');
+
+      browserTrigger(input, 'focus');
+      browserTrigger($('.pickadate-enabled:first'), 'click');
+
+      expect(input).to.have.value('2014-05-01');
+
+      browserTrigger(input, 'focus');
+      browserTrigger($('.pickadate-enabled:last'), 'click');
+
+      expect(input).to.have.value('2014-05-31');
     });
 
   });

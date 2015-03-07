@@ -7,6 +7,15 @@
     return -1;
   };
 
+  function isDescendant(parent, child) {
+     var node = child.parentNode;
+     while (node !== null) {
+       if (node === parent) return true;
+       node = node.parentNode;
+     }
+     return false;
+  }
+
   angular.module('pickadate', [])
 
     .provider('pickadateI18n', function() {
@@ -80,7 +89,39 @@
       };
     }])
 
-    .directive('pickadate', ['$locale', '$sce', 'pickadateUtils', 'pickadateI18n', 'dateFilter', function($locale, $sce, dateUtils, i18n, dateFilter) {
+    .directive('pickadate', ['$locale', '$sce', '$compile', '$document', 'pickadateUtils', 'pickadateI18n', 'dateFilter', function($locale, $sce, $compile, $document, dateUtils, i18n, dateFilter) {
+
+      var TEMPLATE =
+        '<div class="pickadate" ng-show="displayPicker">' +
+          '<div class="pickadate-header">' +
+            '<div class="pickadate-controls">' +
+              '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">' +
+                $sce.trustAsHtml(i18n.t('prev')) +
+              '</a>' +
+              '<a href="" class="pickadate-next" ng-click="changeMonth(1)" ng-show="allowNextMonth">' +
+                $sce.trustAsHtml(i18n.t('next')) +
+              '</a>' +
+            '</div>'+
+            '<h3 class="pickadate-centered-heading">' +
+              '{{currentDate | date:"MMMM yyyy"}}' +
+            '</h3>' +
+          '</div>' +
+          '<div class="pickadate-body">' +
+            '<div class="pickadate-main">' +
+              '<ul class="pickadate-cell">' +
+                '<li class="pickadate-head" ng-repeat="dayName in dayNames">' +
+                  '{{dayName}}' +
+                '</li>' +
+              '</ul>' +
+              '<ul class="pickadate-cell">' +
+                '<li ng-repeat="d in dates" ng-click="setDate(d)" ng-class="classesFor(d)">' +
+                  '{{d.dateObj | date:"d"}}' +
+                '</li>' +
+              '</ul>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
       return {
         require: 'ngModel',
         scope: {
@@ -90,42 +131,14 @@
           disabledDates: '=',
           weekStartsOn: '='
         },
-        template:
-          '<div class="pickadate">' +
-            '<div class="pickadate-header">' +
-              '<div class="pickadate-controls">' +
-                '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">' +
-                  $sce.trustAsHtml(i18n.t('prev')) +
-                '</a>' +
-                '<a href="" class="pickadate-next" ng-click="changeMonth(1)" ng-show="allowNextMonth">' +
-                  $sce.trustAsHtml(i18n.t('next')) +
-                '</a>' +
-              '</div>'+
-              '<h3 class="pickadate-centered-heading">' +
-                '{{currentDate | date:"MMMM yyyy"}}' +
-              '</h3>' +
-            '</div>' +
-            '<div class="pickadate-body">' +
-              '<div class="pickadate-main">' +
-                '<ul class="pickadate-cell">' +
-                  '<li class="pickadate-head" ng-repeat="dayName in dayNames">' +
-                    '{{dayName}}' +
-                  '</li>' +
-                '</ul>' +
-                '<ul class="pickadate-cell">' +
-                  '<li ng-repeat="d in dates" ng-click="setDate(d)" ng-class="classesFor(d)">' +
-                    '{{d.dateObj | date:"d"}}' +
-                  '</li>' +
-                '</ul>' +
-              '</div>' +
-            '</div>' +
-          '</div>',
 
         link: function(scope, element, attrs, ngModel)  {
           var noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
               allowMultiple = attrs.hasOwnProperty('multiple'),
               weekStartsOn  = scope.weekStartsOn,
               selectedDates = [],
+              wantsModal    = element[0] instanceof HTMLInputElement,
+              compiledHtml  = $compile(TEMPLATE)(scope),
               minDate, maxDate;
 
           scope.currentDate = scope.defaultDate && dateUtils.stringToDate(scope.defaultDate);
@@ -134,10 +147,13 @@
             weekStartsOn = 0;
           }
 
+          scope.displayPicker = !wantsModal;
+
           scope.setDate = function(dateObj) {
             if (isOutOfRange(dateObj.dateObj) || isDateDisabled(dateObj.date)) return;
             selectedDates = allowMultiple ? toggleDate(dateObj.date, selectedDates) : [dateObj.date];
             setViewValue(selectedDates);
+            scope.displayPicker = !wantsModal;
           };
 
           ngModel.$render = function() {
@@ -183,6 +199,24 @@
             return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates]);
           }, ngModel.$render);
 
+          // Insert datepicker into DOM
+          if (wantsModal) {
+            element.on('focus', function() {
+              scope.displayPicker = true;
+              scope.$apply();
+            });
+
+            $document.on('click', function(e) {
+              if (isDescendant(compiledHtml[0], e.target) || e.target === element[0]) return;
+              scope.displayPicker = false;
+              scope.$apply();
+            });
+
+            element.after(compiledHtml.addClass('pickadate-modal'));
+          } else {
+            element.append(compiledHtml);
+          }
+
           function render() {
             var initialDate   = new Date(scope.currentDate.getFullYear(), scope.currentDate.getMonth(), 1, 3),
                 currentMonth  = initialDate.getMonth() + 1,
@@ -224,6 +258,7 @@
             } else {
               ngModel.$setViewValue(value[0]);
             }
+            element.val(ngModel.$viewValue);
           }
 
           function enabledDatesOf(dateArray) {
