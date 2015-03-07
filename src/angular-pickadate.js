@@ -89,10 +89,11 @@
       };
     }])
 
-    .directive('pickadate', ['$locale', '$sce', '$compile', '$document', 'pickadateUtils', 'pickadateI18n', 'dateFilter', function($locale, $sce, $compile, $document, dateUtils, i18n, dateFilter) {
+    .directive('pickadate', ['$locale', '$sce', '$compile', '$document', '$window', 'pickadateUtils',
+      'pickadateI18n', 'dateFilter', function($locale, $sce, $compile, $document, $window, dateUtils, i18n, dateFilter) {
 
       var TEMPLATE =
-        '<div class="pickadate" ng-show="displayPicker">' +
+        '<div class="pickadate" ng-show="displayPicker" ng-style="styles">' +
           '<div class="pickadate-header">' +
             '<div class="pickadate-controls">' +
               '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">' +
@@ -201,15 +202,31 @@
 
           // Insert datepicker into DOM
           if (wantsModal) {
-            element.on('focus', function() {
-              scope.displayPicker = true;
+            var togglePicker = function(toggle) {
+              scope.displayPicker = toggle;
               scope.$apply();
+            };
+
+            element.on('focus', function() {
+              var innerWidth = $window.innerWidth || $document.documentElement.clientWidth || $document.body.clientWidth;
+              scope.styles = { top: element[0].getBoundingClientRect().bottom + 'px' };
+
+              if ((innerWidth - element[0].getBoundingClientRect().left ) >= 300) {
+                scope.styles.left = element[0].getBoundingClientRect().left  + 'px';
+              } else {
+                scope.styles.right = innerWidth - element[0].getBoundingClientRect().right  + 'px';
+              }
+
+              togglePicker(true);
+            });
+
+            element.on('keydown', function(e) {
+              if (e.keyCode === 27) togglePicker(false);
             });
 
             $document.on('click', function(e) {
               if (isDescendant(compiledHtml[0], e.target) || e.target === element[0]) return;
-              scope.displayPicker = false;
-              scope.$apply();
+              togglePicker(false);
             });
 
             element.after(compiledHtml.addClass('pickadate-modal'));
