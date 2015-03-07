@@ -18,25 +18,25 @@ var karmaConfFor = function(version) {
 };
 
 gulp.task('clean', function(done) {
-  del('lib/*', done);
+  del('dist/*', done);
 });
 
 gulp.task('dist', ['uglify', 'sass'], function() {
   return gulp.src('./src/*.js')
-    .pipe(gulp.dest('./lib'));
+    .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('uglify', function() {
   gulp.src('./src/*.js')
     .pipe(uglify())
     .pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest('./lib'));
+    .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('sass', function () {
   gulp.src('./src/*.scss')
     .pipe(sass({ errLogToConsole: true }))
-    .pipe(gulp.dest('./lib'));
+    .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('lint', function() {
