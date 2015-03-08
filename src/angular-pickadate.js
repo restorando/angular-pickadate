@@ -8,12 +8,12 @@
   };
 
   function isDescendant(parent, child) {
-     var node = child.parentNode;
-     while (node !== null) {
-       if (node === parent) return true;
-       node = node.parentNode;
-     }
-     return false;
+    var node = child.parentNode;
+    while (node !== null) {
+      if (node === parent) return true;
+      node = node.parentNode;
+    }
+    return false;
   }
 
   angular.module('pickadate', [])
@@ -214,7 +214,7 @@
             });
 
             element.on('keydown', function(e) {
-              if (e.keyCode === 27 || e.keyCode === 9) togglePicker(false);
+              if (indexOf.call([9, 13, 27], e.keyCode) >= 0) togglePicker(false);
             });
 
             // if the user types a date, update the picker and set validity
@@ -230,6 +230,11 @@
             $document.on('click', function(e) {
               if (isDescendant(compiledHtml[0], e.target) || e.target === element[0]) return;
               togglePicker(false);
+            });
+
+            // if the input element has a value, set it as the ng-model
+            scope.$$postDigest(function() {
+              if (attrs.value) { ngModel.$viewValue = attrs.value; $render(); }
             });
 
             element.after(compiledHtml.addClass('pickadate-modal'));

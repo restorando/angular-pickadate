@@ -527,6 +527,36 @@ describe('pickadate', function () {
 
     });
 
+    describe('and the input has already a value', function() {
+
+      function compileModal(value) {
+        var html =
+          '<form name="dateForm">' +
+            '<input pickadate ng-model="ngModelDate" min-date="minDate" type="text" value="' + value + '"></input>' +
+          '</form>';
+
+        $scope.minDate = '2014-01-01';
+        compile(html);
+
+        form    = element;
+        input   = $('input');
+        element = $('.pickadate');
+      }
+
+      it("sets the ng-model value as the element's value", function() {
+        $scope.ngModelDate = '2014-05-10';
+        compileModal('2015-01-14');
+
+        expect($scope.ngModelDate).to.eq('2015-01-14');
+      });
+
+      it("sets the ng-model value as undefined if is not in a valid range", function() {
+        compileModal('2011-01-14');
+        expect($scope.ngModelDate).to.be.undefined;
+      });
+
+    });
+
   });
 
 });
