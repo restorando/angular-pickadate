@@ -39,12 +39,9 @@
 
     .factory('pickadateUtils', ['$locale', function($locale) {
       return {
-        isDate: function(obj) {
-          return Object.prototype.toString.call(obj) === '[object Date]';
-        },
-
         stringToDate: function(dateString) {
-          if (this.isDate(dateString)) return new Date(dateString);
+          if (!dateString) return;
+          if (angular.isDate(dateString)) return new Date(dateString);
           var dateParts = dateString.split('-'),
             year  = dateParts[0],
             month = dateParts[1],
@@ -156,17 +153,14 @@
           };
 
           ngModel.$render = function() {
-            var firstSelectedDate,
-              defaultDate = scope.defaultDate && dateUtils.stringToDate(scope.defaultDate);
-
             if (angular.isArray(ngModel.$viewValue)) {
               selectedDates = ngModel.$viewValue;
             } else if (ngModel.$viewValue) {
               selectedDates = [ngModel.$viewValue];
             }
 
-            firstSelectedDate = selectedDates[0] && dateUtils.stringToDate(selectedDates[0]);
-            scope.currentDate = defaultDate || firstSelectedDate || new Date();
+            scope.currentDate = dateUtils.stringToDate(scope.defaultDate) ||
+              dateUtils.stringToDate(selectedDates[0]) || new Date();
 
             selectedDates = enabledDatesOf(selectedDates);
 
@@ -193,8 +187,8 @@
           scope.$watch(function(){
             return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates]);
           }, function() {
-            minDate = scope.minDate && dateUtils.stringToDate(scope.minDate) || new Date(0);
-            maxDate = scope.maxDate && dateUtils.stringToDate(scope.maxDate) || new Date(99999999999999);
+            minDate = dateUtils.stringToDate(scope.minDate) || new Date(0);
+            maxDate = dateUtils.stringToDate(scope.maxDate) || new Date(99999999999999);
 
             ngModel.$render();
           });
@@ -220,7 +214,17 @@
             });
 
             element.on('keydown', function(e) {
-              if (e.keyCode === 27) togglePicker(false);
+              if (e.keyCode === 27 || e.keyCode === 9) togglePicker(false);
+            });
+
+            // if the user types a date, update the picker and set validity
+            scope.$watch(function() {
+              return ngModel.$viewValue;
+            }, function(val) {
+              var isValidDate = /^\d{4}-\d{1,2}-\d{1,2}$/.test(val);
+
+              if (isValidDate) ngModel.$render();
+              ngModel.$setValidity('validDate', isValidDate);
             });
 
             $document.on('click', function(e) {
