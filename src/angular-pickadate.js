@@ -142,13 +142,11 @@
               compiledHtml  = $compile(TEMPLATE)(scope),
               minDate, maxDate;
 
-          scope.currentDate = scope.defaultDate && dateUtils.stringToDate(scope.defaultDate);
+          scope.displayPicker = !wantsModal;
 
           if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
             weekStartsOn = 0;
           }
-
-          scope.displayPicker = !wantsModal;
 
           scope.setDate = function(dateObj) {
             if (isOutOfRange(dateObj.dateObj) || isDateDisabled(dateObj.date)) return;
@@ -158,25 +156,21 @@
           };
 
           ngModel.$render = function() {
-            var firstSelectedDate;
+            var firstSelectedDate,
+              defaultDate = scope.defaultDate && dateUtils.stringToDate(scope.defaultDate);
 
-            if (angular.isArray(ngModel.$modelValue)) {
-              selectedDates = ngModel.$modelValue;
-            } else if (ngModel.$modelValue) {
-              selectedDates = [ngModel.$modelValue];
+            if (angular.isArray(ngModel.$viewValue)) {
+              selectedDates = ngModel.$viewValue;
+            } else if (ngModel.$viewValue) {
+              selectedDates = [ngModel.$viewValue];
             }
 
             firstSelectedDate = selectedDates[0] && dateUtils.stringToDate(selectedDates[0]);
-            scope.currentDate = scope.currentDate || firstSelectedDate || new Date();
+            scope.currentDate = defaultDate || firstSelectedDate || new Date();
 
-            minDate = scope.minDate && dateUtils.stringToDate(scope.minDate) || new Date(0);
-            maxDate = scope.maxDate && dateUtils.stringToDate(scope.maxDate) || new Date(99999999999999);
-
-            // if some of the initial dates set by the user is in the disabled dates list, remove them
             selectedDates = enabledDatesOf(selectedDates);
 
             setViewValue(selectedDates);
-
             render();
           };
 
@@ -198,7 +192,12 @@
           // Workaround to watch multiple properties. XXX use $scope.$watchGroup in angular 1.3
           scope.$watch(function(){
             return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates]);
-          }, ngModel.$render);
+          }, function() {
+            minDate = scope.minDate && dateUtils.stringToDate(scope.minDate) || new Date(0);
+            maxDate = scope.maxDate && dateUtils.stringToDate(scope.maxDate) || new Date(99999999999999);
+
+            ngModel.$render();
+          });
 
           // Insert datepicker into DOM
           if (wantsModal) {
