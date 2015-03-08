@@ -152,7 +152,7 @@
             scope.displayPicker = !wantsModal;
           };
 
-          ngModel.$render = function() {
+          var $render = function() {
             if (angular.isArray(ngModel.$viewValue)) {
               selectedDates = ngModel.$viewValue;
             } else if (ngModel.$viewValue) {
@@ -167,6 +167,9 @@
             setViewValue(selectedDates);
             render();
           };
+
+          // angular 1.2 rewrites the ngModel.$render method for HTMLInputElement, so we must rewrite it again
+          scope.$$postDigest(function() { ngModel.$render = $render; });
 
           scope.classesFor = function(date) {
             var extraClasses = indexOf.call(selectedDates, date.date) >= 0 ? 'pickadate-active' : null;
@@ -190,7 +193,7 @@
             minDate = dateUtils.stringToDate(scope.minDate) || new Date(0);
             maxDate = dateUtils.stringToDate(scope.maxDate) || new Date(99999999999999);
 
-            ngModel.$render();
+            $render();
           });
 
           // Insert datepicker into DOM
