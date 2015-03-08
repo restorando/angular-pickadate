@@ -152,7 +152,7 @@
             scope.displayPicker = !wantsModal;
           };
 
-          ngModel.$render = function() {
+          var $render = ngModel.$render = function() {
             if (angular.isArray(ngModel.$viewValue)) {
               selectedDates = ngModel.$viewValue;
             } else if (ngModel.$viewValue) {
@@ -190,7 +190,7 @@
             minDate = dateUtils.stringToDate(scope.minDate) || new Date(0);
             maxDate = dateUtils.stringToDate(scope.maxDate) || new Date(99999999999999);
 
-            ngModel.$render();
+            $render();
           });
 
           // Insert datepicker into DOM
@@ -223,8 +223,8 @@
             }, function(val) {
               var isValidDate = /^\d{4}-\d{1,2}-\d{1,2}$/.test(val);
 
-              if (isValidDate) ngModel.$render();
-              ngModel.$setValidity('validDate', isValidDate);
+              if (isValidDate) $render();
+              ngModel.$setValidity('date', isValidDate);
             });
 
             $document.on('click', function(e) {

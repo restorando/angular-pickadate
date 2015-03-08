@@ -9,6 +9,7 @@ var _ = require('lodash');
 var karma = require('karma').server;
 var karmaConf = require('./karma.conf');
 var jshint = require('gulp-jshint');
+var legacyVersions = ['1.2.21', '1.3.6'];
 
 var karmaConfFor = function(version) {
   var conf = _.clone(karmaConf);
@@ -46,27 +47,30 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter('fail'));
 });
 
-gulp.task('test:legacy', function (done) {
-  karma.start(_.assign({}, karmaConfFor('1.2.21'), {singleRun: true}), done);
+legacyVersions.forEach(function(version) {
+  gulp.task('test:legacy:' + version, function (done) {
+    karma.start(_.assign({}, karmaConfFor(version), {singleRun: true}), done);
+  });
+
+  gulp.task('tdd:legacy:' + version, function (done) {
+    karma.start(karmaConfFor(version), done);
+  });
 });
+
+gulp.task('test:legacy', legacyVersions.map(function(version) {
+  return 'test:legacy:' + version;
+}));
 
 /**
  * Run test once and exit
  */
 gulp.task('test', ['lint', 'test:legacy'], function (done) {
-  karma.start(_.assign({}, karmaConfFor('1.3.6'), {singleRun: true}), done);
+  karma.start(_.assign({}, karmaConfFor('1.4.0'), {singleRun: true}), done);
 });
 
-/**
- * Watch for file changes and re-run tests on each change
- */
-
-gulp.task('tdd:legacy', function (done) {
-  karma.start(karmaConfFor('1.2.21'), done);
-});
 
 gulp.task('tdd', function (done) {
-  karma.start(karmaConfFor('1.3.6'), done);
+  karma.start(karmaConfFor('1.4.0'), done);
 });
 
 gulp.task('default', ['tdd']);

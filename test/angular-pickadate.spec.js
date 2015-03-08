@@ -158,6 +158,14 @@ describe('pickadate', function () {
           expect($scope.date).to.be.undefined;
         });
 
+        it("re-renders the calendar on the selected date", function() {
+          $scope.date = '2014-06-20';
+          $scope.$digest();
+
+          expect($('.pickadate-centered-heading')).to.have.text('June 2014');
+          expect($('li:contains(20)')).to.have.class('pickadate-active');
+        });
+
       });
 
       describe('Disabled dates', function() {
@@ -423,16 +431,20 @@ describe('pickadate', function () {
 
   });
 
-  describe('Modal', function() {
+  describe('When used as a modal', function() {
 
-    var inputHtml = '<input pickadate ng-model="date" type="text"></input>',
-        input;
+    var inputHtml = '<form name="dateForm">' +
+                      '<input pickadate ng-model="date" min-date="minDate" type="text"></input>' +
+                    '</form>',
+        input, form;
 
     beforeEach(function() {
       $scope.date = '2014-05-17';
+      $scope.minDate = '2014-01-01';
       compile(inputHtml);
-      input   = element;
-      element = jQuery(element).siblings().first();
+      form    = element;
+      input   = $('input');
+      element = $('.pickadate');
     });
 
     it('adds the pickadate-modal class', function() {
@@ -490,6 +502,29 @@ describe('pickadate', function () {
       browserTrigger($('.pickadate-enabled:last'), 'click');
 
       expect(input).to.have.value('2014-05-31');
+    });
+
+    describe('and the input value is manually changed', function() {
+
+      it('updates the ng-model with the entered value', function() {
+        expect($scope.date).to.eq('2014-05-17');
+
+        input.val('2015-02-20');
+        browserTrigger(input, 'change');
+
+        expect($scope.date).to.eq('2015-02-20');
+      });
+
+      it('sets the ng-model to undefined if the date is not in a valid range', function() {
+        expect($scope.date).to.eq('2014-05-17');
+        expect($scope.dateForm.$error).not.to.have.property('date');
+
+        input.val('2012-02-20');
+        browserTrigger(input, 'change');
+
+        expect($scope.dateForm.$error).to.have.property('date');
+      });
+
     });
 
   });

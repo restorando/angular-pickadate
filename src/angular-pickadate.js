@@ -152,7 +152,7 @@
             scope.displayPicker = !wantsModal;
           };
 
-          var $render = function() {
+          var $render = ngModel.$render = function() {
             if (angular.isArray(ngModel.$viewValue)) {
               selectedDates = ngModel.$viewValue;
             } else if (ngModel.$viewValue) {
@@ -167,9 +167,6 @@
             setViewValue(selectedDates);
             render();
           };
-
-          // angular 1.2 rewrites the ngModel.$render method for HTMLInputElement, so we must rewrite it again
-          scope.$$postDigest(function() { ngModel.$render = $render; });
 
           scope.classesFor = function(date) {
             var extraClasses = indexOf.call(selectedDates, date.date) >= 0 ? 'pickadate-active' : null;
@@ -226,8 +223,8 @@
             }, function(val) {
               var isValidDate = /^\d{4}-\d{1,2}-\d{1,2}$/.test(val);
 
-              if (isValidDate) ngModel.$render();
-              ngModel.$setValidity('validDate', isValidDate);
+              if (isValidDate) $render();
+              ngModel.$setValidity('date', isValidDate);
             });
 
             $document.on('click', function(e) {
