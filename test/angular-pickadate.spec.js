@@ -361,6 +361,37 @@ describe('pickadate', function () {
 
   });
 
+  describe('Date formats', function() {
+
+    beforeEach(function() {
+      this.clock = sinon.useFakeTimers(1431025777408);
+    });
+
+    afterEach(function() {
+      this.clock.restore();
+    });
+
+    var compileFormat = function(format) {
+      compile('<div pickadate ng-model="date" format="' + format + '"></div>');
+    };
+
+    it("sets the date in the right format after selecting it", function() {
+      compileFormat('dd/MM/yyyy');
+      browserTrigger($('.pickadate-enabled:first'), 'click');
+      expect($scope.date).to.equal('01/05/2015');
+    });
+
+    it("takes the initial date in the right format", function() {
+      $scope.date = '20/02/2012';
+      compileFormat('dd/mm/yyyy');
+
+      expect($scope.date).to.equal('20/02/2012');
+      expect($('.pickadate-centered-heading')).to.have.text('February 2012');
+      expect($('li:contains(20)')).to.have.class('pickadate-active');
+    });
+
+  });
+
   describe('Multiple dates', function() {
 
     beforeEach(function() {

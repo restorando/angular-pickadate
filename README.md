@@ -23,9 +23,27 @@ angular.module('myApp', ['pickadate']);
 <div pickadate ng-model="date"></div>
 ```
 
+If the element is an `<input>`, it will display the datepicker as a modal. Otherwise, it will be rendered inline.
+
 Pickadate is fluid, so it will take the width of the parent container.
 
 ### Pickadate options
+
+#### format
+
+You can specify the date format using the `format` attribute. Supported formats must have the year, month and day parts, and the separator must be `-` or `/`.
+
+```html
+<div pickadate ng-model="date" format="dd/mm/yyyy"></div>
+```
+
+Format string can be composed of the following elements:
+
+* `'yyyy;`: 4 digit representation of year (e.g. AD 1 => 0001, AD 2010 => 2010)
+* `'mm'` or `'MM'`: Month in year, padded (01-12)
+* `'dd'`: Day in month, padded (01-31)
+
+Every option that receives a date as the input (e.g. min-date, max-date, disabled-dates, etc) should be entered using the same format.
 
 #### min-date, max-date
 
@@ -114,10 +132,6 @@ angular.module('testApp', ['pickadate'])
 ```
 
 The translations can contain custom html code, useful to include custom icons in the calendar controls.
-
-### Future development
-
-Currently `pickadate` only works as an inline datepicker, but would like it to make it work in any text input as an overlay like the `jquery-ui` one. Will be happy to merge your pull requests.
 
 ## License
 
