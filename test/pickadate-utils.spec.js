@@ -1,3 +1,5 @@
+/* jshint expr: true */
+
 describe('pickadateUtils', function () {
   'use strict';
   var utils = null;
@@ -9,22 +11,50 @@ describe('pickadateUtils', function () {
   }));
 
 
-  describe('stringToDate', function() {
+  describe('parseDate', function() {
 
-    it("parses the string and return a date object", function() {
-      var dateString = "2014-02-04",
-          date = utils.stringToDate(dateString);
+    [
+      ['2014-02-04', null],
+      ['2014-02-04', 'yyyy-MM-dd'],
+      ['2014-04-02', 'yyyy-dd-MM'],
+      ['2014/02/04', 'yyyy/MM/dd'],
+      ['2014/04/02', 'yyyy/dd/MM'],
+      ['04/02/2014', 'dd/MM/yyyy'],
+      ['04-02-2014', 'dd-MM-yyyy'],
+      ['04-02-14',   'dd-MM-yy'],
+      ['04/02/14',   'dd/MM/yy'],
+    ].forEach(function(format) {
 
-      expect(date.getDate()).to.equal(4);
+      it("parses the string in " + format[1] + " format and return a date object", function() {
+        var dateString = format[0],
+            date = utils.parseDate(dateString, format[1]);
+
+        expect(date.getDate()).to.equal(4);
+        expect(date.getMonth()).to.equal(1);
+        expect(date.getFullYear()).to.equal(2014);
+        expect(date.getHours()).to.equal(3);
+      });
+
+    });
+
+    it("parses correctly dates after 1930 in dd/mm/yy format", function() {
+      var date = utils.parseDate('20/02/83', 'dd/MM/yy');
+
+      expect(date.getDate()).to.equal(20);
       expect(date.getMonth()).to.equal(1);
-      expect(date.getFullYear()).to.equal(2014);
+      expect(date.getFullYear()).to.equal(1983);
       expect(date.getHours()).to.equal(3);
+    });
+
+    it("returns undefined if a falsey object is passed", function() {
+      expect(utils.parseDate(null)).to.be.undefined;
+      expect(utils.parseDate(undefined)).to.be.undefined;
     });
 
     it("returns a new date if a date object is passed", function() {
       var date = new Date();
 
-      expect(utils.stringToDate(date).getTime()).to.equal(date.getTime());
+      expect(utils.parseDate(date).getTime()).to.equal(date.getTime());
     });
 
   });
@@ -50,7 +80,7 @@ describe('pickadateUtils', function () {
     var date,
         weekStartsOn,
         d = function(date) {
-          return utils.stringToDate(date);
+          return utils.parseDate(date);
         };
 
     beforeEach(function() {

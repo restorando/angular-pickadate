@@ -38,17 +38,38 @@
     })
 
     .factory('pickadateUtils', ['$locale', function($locale) {
+
+      function getPartName(part) {
+        switch (part) {
+          case 'dd': return 'day';
+          case 'MM': return 'month';
+          default:   return 'year';
+        }
+      }
+
       return {
-        stringToDate: function(dateString) {
+        parseDate: function(dateString, format) {
           if (!dateString) return;
           if (angular.isDate(dateString)) return new Date(dateString);
-          var dateParts = dateString.split('-'),
-            year  = dateParts[0],
-            month = dateParts[1],
-            day   = dateParts[2];
 
-          // set hour to 3am to easily avoid DST change
-          return new Date(year, month - 1, day, 3);
+          format = format || 'yyyy-MM-dd';
+
+          var formatRegex = '(dd|MM|y{2,4})',
+              separator   = format.match(/[-|/]/)[0],
+              dateParts   = dateString.split(separator),
+              regexp      = new RegExp([formatRegex, formatRegex, formatRegex].join(separator)),
+              formatParts = format.match(regexp),
+              dateObj     = {};
+
+          formatParts.shift();
+
+          angular.forEach(formatParts, function(part, i) {
+            var datePart = parseInt(dateParts[i], 10);
+            if (part === 'yy') datePart += datePart < 30 ? 2000 : 1900;
+            dateObj[getPartName(part)] = datePart;
+          });
+
+          return new Date(dateObj.year, dateObj.month - 1, dateObj.day, 3);
         },
 
         buildDates: function(date, options) {
@@ -159,8 +180,8 @@
               selectedDates = [ngModel.$viewValue];
             }
 
-            scope.currentDate = dateUtils.stringToDate(scope.defaultDate) ||
-              dateUtils.stringToDate(selectedDates[0]) || new Date();
+            scope.currentDate = dateUtils.parseDate(scope.defaultDate) ||
+              dateUtils.parseDate(selectedDates[0]) || new Date();
 
             selectedDates = enabledDatesOf(selectedDates);
 
@@ -187,8 +208,8 @@
           scope.$watch(function(){
             return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates]);
           }, function() {
-            minDate = dateUtils.stringToDate(scope.minDate) || new Date(0);
-            maxDate = dateUtils.stringToDate(scope.maxDate) || new Date(99999999999999);
+            minDate = dateUtils.parseDate(scope.minDate) || new Date(0);
+            maxDate = dateUtils.parseDate(scope.maxDate) || new Date(99999999999999);
 
             $render();
           });
@@ -292,7 +313,7 @@
             for (var i = 0; i < dateArray.length; i++) {
               var date = dateArray[i];
 
-              if (!isDateDisabled(date) && !isOutOfRange(dateUtils.stringToDate(date))) {
+              if (!isDateDisabled(date) && !isOutOfRange(dateUtils.parseDate(date))) {
                 resultArray.push(date);
               }
             }
