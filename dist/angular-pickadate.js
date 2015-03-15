@@ -7,6 +7,15 @@
     return -1;
   };
 
+  function isDescendant(parent, child) {
+    var node = child.parentNode;
+    while (node !== null) {
+      if (node === parent) return true;
+      node = node.parentNode;
+    }
+    return false;
+  }
+
   angular.module('pickadate', [])
 
     .provider('pickadateI18n', function() {
@@ -29,20 +38,38 @@
     })
 
     .factory('pickadateUtils', ['$locale', function($locale) {
+
+      function getPartName(part) {
+        switch (part) {
+          case 'dd':   return 'day';
+          case 'MM':   return 'month';
+          case 'yyyy': return 'year';
+        }
+      }
+
       return {
-        isDate: function(obj) {
-          return Object.prototype.toString.call(obj) === '[object Date]';
-        },
+        parseDate: function(dateString, format) {
+          if (!dateString) return;
+          if (angular.isDate(dateString)) return new Date(dateString);
 
-        stringToDate: function(dateString) {
-          if (this.isDate(dateString)) return new Date(dateString);
-          var dateParts = dateString.split('-'),
-            year  = dateParts[0],
-            month = dateParts[1],
-            day   = dateParts[2];
+          format = format || 'yyyy-MM-dd';
 
-          // set hour to 3am to easily avoid DST change
-          return new Date(year, month - 1, day, 3);
+          var formatRegex = '(dd|MM|yyyy)',
+              separator   = format.match(/[-|/]/)[0],
+              dateParts   = dateString.split(separator),
+              regexp      = new RegExp([formatRegex, formatRegex, formatRegex].join(separator)),
+              formatParts = format.match(regexp),
+              dateObj     = {};
+
+          formatParts.shift();
+
+          angular.forEach(formatParts, function(part, i) {
+            dateObj[getPartName(part)] = parseInt(dateParts[i], 10);
+          });
+
+          if (isNaN(dateObj.year) || isNaN(dateObj.month) || isNaN(dateObj.day)) return;
+
+          return new Date(dateObj.year, dateObj.month - 1, dateObj.day, 3);
         },
 
         buildDates: function(date, options) {
@@ -80,56 +107,61 @@
       };
     }])
 
-    .directive('pickadate', ['$locale', '$sce', 'pickadateUtils', 'pickadateI18n', 'dateFilter', function($locale, $sce, dateUtils, i18n, dateFilter) {
+    .directive('pickadate', ['$locale', '$sce', '$compile', '$document', '$window', 'pickadateUtils',
+      'pickadateI18n', 'dateFilter', function($locale, $sce, $compile, $document, $window, dateUtils, i18n, dateFilter) {
+
+      var TEMPLATE =
+        '<div class="pickadate" ng-show="displayPicker" ng-style="styles">' +
+          '<div class="pickadate-header">' +
+            '<div class="pickadate-controls">' +
+              '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">' +
+                $sce.trustAsHtml(i18n.t('prev')) +
+              '</a>' +
+              '<a href="" class="pickadate-next" ng-click="changeMonth(1)" ng-show="allowNextMonth">' +
+                $sce.trustAsHtml(i18n.t('next')) +
+              '</a>' +
+            '</div>'+
+            '<h3 class="pickadate-centered-heading">' +
+              '{{currentDate | date:"MMMM yyyy"}}' +
+            '</h3>' +
+          '</div>' +
+          '<div class="pickadate-body">' +
+            '<div class="pickadate-main">' +
+              '<ul class="pickadate-cell">' +
+                '<li class="pickadate-head" ng-repeat="dayName in dayNames">' +
+                  '{{dayName}}' +
+                '</li>' +
+              '</ul>' +
+              '<ul class="pickadate-cell">' +
+                '<li ng-repeat="d in dates" ng-click="setDate(d)" ng-class="classesFor(d)">' +
+                  '{{d.dateObj | date:"d"}}' +
+                '</li>' +
+              '</ul>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
       return {
         require: 'ngModel',
         scope: {
-          date: '=ngModel',
           defaultDate: '=',
           minDate: '=',
           maxDate: '=',
           disabledDates: '=',
-          weekStartsOn: '='
+          weekStartsOn: '=',
         },
-        template:
-          '<div class="pickadate">' +
-            '<div class="pickadate-header">' +
-              '<div class="pickadate-controls">' +
-                '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">' +
-                  $sce.trustAsHtml(i18n.t('prev')) +
-                '</a>' +
-                '<a href="" class="pickadate-next" ng-click="changeMonth(1)" ng-show="allowNextMonth">' +
-                  $sce.trustAsHtml(i18n.t('next')) +
-                '</a>' +
-              '</div>'+
-              '<h3 class="pickadate-centered-heading">' +
-                '{{currentDate | date:"MMMM yyyy"}}' +
-              '</h3>' +
-            '</div>' +
-            '<div class="pickadate-body">' +
-              '<div class="pickadate-main">' +
-                '<ul class="pickadate-cell">' +
-                  '<li class="pickadate-head" ng-repeat="dayName in dayNames">' +
-                    '{{dayName}}' +
-                  '</li>' +
-                '</ul>' +
-                '<ul class="pickadate-cell">' +
-                  '<li ng-repeat="d in dates" ng-click="setDate(d)" ng-class="classesFor(d)">' +
-                    '{{d.dateObj | date:"d"}}' +
-                  '</li>' +
-                '</ul>' +
-              '</div>' +
-            '</div>' +
-          '</div>',
 
         link: function(scope, element, attrs, ngModel)  {
           var noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
               allowMultiple = attrs.hasOwnProperty('multiple'),
               weekStartsOn  = scope.weekStartsOn,
               selectedDates = [],
+              wantsModal    = element[0] instanceof HTMLInputElement,
+              compiledHtml  = $compile(TEMPLATE)(scope),
+              format        = (attrs.format || 'yyyy-MM-dd').replace(/m/g, 'M'),
               minDate, maxDate;
 
-          scope.currentDate = scope.defaultDate && dateUtils.stringToDate(scope.defaultDate);
+          scope.displayPicker = !wantsModal;
 
           if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
             weekStartsOn = 0;
@@ -139,28 +171,24 @@
             if (isOutOfRange(dateObj.dateObj) || isDateDisabled(dateObj.date)) return;
             selectedDates = allowMultiple ? toggleDate(dateObj.date, selectedDates) : [dateObj.date];
             setViewValue(selectedDates);
+            scope.displayPicker = !wantsModal;
           };
 
-          ngModel.$render = function() {
-            var firstSelectedDate;
+          var $render = ngModel.$render = function(options) {
+            options = options || {};
 
-            if (angular.isArray(ngModel.$modelValue)) {
-              selectedDates = ngModel.$modelValue;
-            } else if (ngModel.$modelValue) {
-              selectedDates = [ngModel.$modelValue];
+            if (angular.isArray(ngModel.$viewValue)) {
+              selectedDates = ngModel.$viewValue;
+            } else if (ngModel.$viewValue) {
+              selectedDates = [ngModel.$viewValue];
             }
 
-            firstSelectedDate = selectedDates[0] && dateUtils.stringToDate(selectedDates[0]);
-            scope.currentDate = scope.currentDate || firstSelectedDate || new Date();
+            scope.currentDate = dateUtils.parseDate(scope.defaultDate, format) ||
+              dateUtils.parseDate(selectedDates[0], format) || new Date();
 
-            minDate = scope.minDate && dateUtils.stringToDate(scope.minDate) || new Date(0);
-            maxDate = scope.maxDate && dateUtils.stringToDate(scope.maxDate) || new Date(99999999999999);
-
-            // if some of the initial dates set by the user is in the disabled dates list, remove them
             selectedDates = enabledDatesOf(selectedDates);
 
-            setViewValue(selectedDates);
-
+            setViewValue(selectedDates, options);
             render();
           };
 
@@ -182,14 +210,73 @@
           // Workaround to watch multiple properties. XXX use $scope.$watchGroup in angular 1.3
           scope.$watch(function(){
             return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates]);
-          }, ngModel.$render);
+          }, function() {
+            minDate = dateUtils.parseDate(scope.minDate, format) || new Date(0);
+            maxDate = dateUtils.parseDate(scope.maxDate, format) || new Date(99999999999999);
+
+            $render();
+          });
+
+          // Insert datepicker into DOM
+          if (wantsModal) {
+            var togglePicker = function(toggle) {
+              scope.displayPicker = toggle;
+              scope.$apply();
+            };
+
+            element.on('focus', function() {
+              var supportPageOffset = $window.pageXOffset !== undefined,
+                  isCSS1Compat = (($document.compatMode || "") === "CSS1Compat"),
+                  scrollX = supportPageOffset ? $window.pageXOffset : isCSS1Compat ? $document.documentElement.scrollLeft : $document.body.scrollLeft,
+                  scrollY = supportPageOffset ? $window.pageYOffset : isCSS1Compat ? $document.documentElement.scrollTop : $document.body.scrollTop,
+                  innerWidth = $window.innerWidth || $document.documentElement.clientWidth || $document.body.clientWidth;
+
+              scope.styles = { top: scrollY + element[0].getBoundingClientRect().bottom + 'px' };
+
+              if ((innerWidth - element[0].getBoundingClientRect().left ) >= 300) {
+                scope.styles.left = scrollX + element[0].getBoundingClientRect().left  + 'px';
+              } else {
+                scope.styles.right = innerWidth - element[0].getBoundingClientRect().right - scrollX + 'px';
+              }
+
+              togglePicker(true);
+            });
+
+            element.on('keydown', function(e) {
+              if (indexOf.call([9, 13, 27], e.keyCode) >= 0) togglePicker(false);
+            });
+
+            // if the user types a date, update the picker and set validity
+            scope.$watch(function() {
+              return ngModel.$viewValue;
+            }, function(val) {
+              var isValidDate = dateUtils.parseDate(val, format);
+
+              if (isValidDate) $render({ skipRenderInput: true });
+              ngModel.$setValidity('date', !!isValidDate);
+            });
+
+            $document.on('click', function(e) {
+              if (isDescendant(compiledHtml[0], e.target) || e.target === element[0]) return;
+              togglePicker(false);
+            });
+
+            // if the input element has a value, set it as the ng-model
+            scope.$$postDigest(function() {
+              if (attrs.value) { ngModel.$viewValue = attrs.value; $render(); }
+            });
+
+            element.after(compiledHtml.addClass('pickadate-modal'));
+          } else {
+            element.append(compiledHtml);
+          }
 
           function render() {
             var initialDate   = new Date(scope.currentDate.getFullYear(), scope.currentDate.getMonth(), 1, 3),
                 currentMonth  = initialDate.getMonth() + 1,
                 allDates      = dateUtils.buildDates(initialDate, { weekStartsOn: weekStartsOn, noExtraRows: noExtraRows }),
                 dates         = [],
-                today         = dateFilter(new Date(), 'yyyy-MM-dd');
+                today         = dateFilter(new Date(), format);
 
             var nextMonthInitialDate = new Date(initialDate);
             nextMonthInitialDate.setMonth(currentMonth);
@@ -201,7 +288,7 @@
             for (var i = 0; i < allDates.length; i++) {
               var classNames = [],
                   dateObj    = allDates[i],
-                  date       = dateFilter(dateObj, 'yyyy-MM-dd'),
+                  date       = dateFilter(dateObj, format),
                   isDisabled = isDateDisabled(date);
 
               if (isOutOfRange(dateObj) || isDisabled) {
@@ -219,12 +306,15 @@
             scope.dates = dates;
           }
 
-          function setViewValue(value) {
+          function setViewValue(value, options) {
+            options = options || {};
+
             if (allowMultiple) {
               ngModel.$setViewValue(value);
             } else {
               ngModel.$setViewValue(value[0]);
             }
+            if (!options.skipRenderInput) element.val(ngModel.$viewValue);
           }
 
           function enabledDatesOf(dateArray) {
@@ -233,7 +323,7 @@
             for (var i = 0; i < dateArray.length; i++) {
               var date = dateArray[i];
 
-              if (!isDateDisabled(date) && !isOutOfRange(dateUtils.stringToDate(date))) {
+              if (!isDateDisabled(date) && !isOutOfRange(dateUtils.parseDate(date, format))) {
                 resultArray.push(date);
               }
             }

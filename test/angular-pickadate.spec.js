@@ -6,6 +6,7 @@ describe('pickadate', function () {
   var element,
       $scope,
       $compile,
+      $document,
       pickadateI18nProvider,
       defaultHtml = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
                       'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate">' +
@@ -18,9 +19,10 @@ describe('pickadate', function () {
   }));
 
   beforeEach(function() {
-    inject(function($rootScope, _$compile_){
+    inject(function($rootScope, _$compile_, _$document_){
       $scope = $rootScope.$new();
       $compile = _$compile_;
+      $document = _$document_;
     });
   });
 
@@ -71,6 +73,10 @@ describe('pickadate', function () {
     });
 
     describe('Selected date', function() {
+
+      it("doesn't add the pickadate-modal class", function() {
+        expect($('.pickadate')).not.to.have.class('pickadate-modal');
+      });
 
       it("adds the 'pickadate-active' class for the selected date", function() {
         expect($('.pickadate-active')).to.have.text('17');
@@ -150,6 +156,14 @@ describe('pickadate', function () {
           $scope.$digest();
 
           expect($scope.date).to.be.undefined;
+        });
+
+        it("re-renders the calendar on the selected date", function() {
+          $scope.date = '2014-06-20';
+          $scope.$digest();
+
+          expect($('.pickadate-centered-heading')).to.have.text('June 2014');
+          expect($('li:contains(20)')).to.have.class('pickadate-active');
         });
 
       });
@@ -347,6 +361,37 @@ describe('pickadate', function () {
 
   });
 
+  describe('Date formats', function() {
+
+    beforeEach(function() {
+      this.clock = sinon.useFakeTimers(1431025777408);
+    });
+
+    afterEach(function() {
+      this.clock.restore();
+    });
+
+    var compileFormat = function(format) {
+      compile('<div pickadate ng-model="date" format="' + format + '"></div>');
+    };
+
+    it("sets the date in the right format after selecting it", function() {
+      compileFormat('dd/MM/yyyy');
+      browserTrigger($('.pickadate-enabled:first'), 'click');
+      expect($scope.date).to.equal('01/05/2015');
+    });
+
+    it("takes the initial date in the right format", function() {
+      $scope.date = '20/02/2012';
+      compileFormat('dd/mm/yyyy');
+
+      expect($scope.date).to.equal('20/02/2012');
+      expect($('.pickadate-centered-heading')).to.have.text('February 2012');
+      expect($('li:contains(20)')).to.have.class('pickadate-active');
+    });
+
+  });
+
   describe('Multiple dates', function() {
 
     beforeEach(function() {
@@ -411,6 +456,144 @@ describe('pickadate', function () {
 
         expect($('.pickadate-active').get()).to.have.length(1);
         expect($('.pickadate-active:eq(0)')).to.have.text('7');
+      });
+
+    });
+
+  });
+
+  describe('When used as a modal', function() {
+
+    var inputHtml = '<form name="dateForm">' +
+                      '<input pickadate ng-model="date" min-date="minDate" type="text"></input>' +
+                    '</form>',
+        input, form;
+
+    beforeEach(function() {
+      $scope.date = '2014-05-17';
+      $scope.minDate = '2014-01-01';
+      compile(inputHtml);
+      form    = element;
+      input   = $('input');
+      element = $('.pickadate');
+    });
+
+    it('adds the pickadate-modal class', function() {
+      expect(element).to.have.class('pickadate-modal');
+    });
+
+    it('renders the datepicker already hidden', function() {
+      expect(element).to.have.class('ng-hide');
+    });
+
+    it('displays the datepicker when the input is focused', function() {
+      browserTrigger(input, 'focus');
+      expect(element).not.to.have.class('ng-hide');
+    });
+
+    it('hides the datepicker when the user clicks outside the datepicker', function() {
+      expect(element).to.have.class('ng-hide');
+
+      browserTrigger(input, 'focus');
+      expect(element).not.to.have.class('ng-hide');
+
+      browserTrigger(document.body, 'click');
+      expect(element).to.have.class('ng-hide');
+    });
+
+    it("doesn't hide the datepicker if the calendar is clicked", function() {
+      expect(element).to.have.class('ng-hide');
+
+      browserTrigger(input, 'focus');
+      expect(element).not.to.have.class('ng-hide');
+
+      browserTrigger($('.pickadate-centered-heading'), 'click');
+      expect(element).not.to.have.class('ng-hide');
+    });
+
+    it("hides the datepicker if a date is selected", function() {
+      expect(element).to.have.class('ng-hide');
+
+      browserTrigger(input, 'focus');
+      expect(element).not.to.have.class('ng-hide');
+
+      browserTrigger($('.pickadate-enabled:first'), 'click');
+      expect(element).to.have.class('ng-hide');
+    });
+
+    it('sets the input value with the ng-model value', function() {
+      expect(input).to.have.value('2014-05-17');
+
+      browserTrigger(input, 'focus');
+      browserTrigger($('.pickadate-enabled:first'), 'click');
+
+      expect(input).to.have.value('2014-05-01');
+
+      browserTrigger(input, 'focus');
+      browserTrigger($('.pickadate-enabled:last'), 'click');
+
+      expect(input).to.have.value('2014-05-31');
+    });
+
+    describe('and the input value is manually changed', function() {
+
+      it('updates the ng-model with the entered value', function() {
+        expect($scope.date).to.eq('2014-05-17');
+
+        input.val('2015-02-20');
+        browserTrigger(input, 'change');
+
+        expect($scope.date).to.eq('2015-02-20');
+      });
+
+      it('sets the ng-model to undefined if the date is not in a valid range', function() {
+        expect($scope.date).to.eq('2014-05-17');
+        expect($scope.dateForm.$error).not.to.have.property('date');
+
+        input.val('2012-02-20');
+        browserTrigger(input, 'change');
+
+        expect($scope.dateForm.$error).to.have.property('date');
+      });
+
+      it('sets the ng-model to undefined if the date is not valid', function() {
+        expect($scope.date).to.eq('2014-05-17');
+        expect($scope.dateForm.$error).not.to.have.property('date');
+
+        input.val('2012-02-');
+        browserTrigger(input, 'change');
+
+        expect($scope.dateForm.$error).to.have.property('date');
+      });
+
+    });
+
+    describe('and the input has already a value', function() {
+
+      function compileModal(value) {
+        var html =
+          '<form name="dateForm">' +
+            '<input pickadate ng-model="ngModelDate" min-date="minDate" type="text" value="' + value + '"></input>' +
+          '</form>';
+
+        $scope.minDate = '2014-01-01';
+        compile(html);
+
+        form    = element;
+        input   = $('input');
+        element = $('.pickadate');
+      }
+
+      it("sets the ng-model value as the element's value", function() {
+        $scope.ngModelDate = '2014-05-10';
+        compileModal('2015-01-14');
+
+        expect($scope.ngModelDate).to.eq('2015-01-14');
+      });
+
+      it("sets the ng-model value as undefined if is not in a valid range", function() {
+        compileModal('2011-01-14');
+        expect($scope.ngModelDate).to.be.undefined;
       });
 
     });
