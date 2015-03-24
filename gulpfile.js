@@ -4,6 +4,8 @@ var gulp = require('gulp');
 var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
 var rename = require("gulp-rename");
+var footer = require('gulp-footer');
+var fs = require('fs');
 var del = require("del");
 var _ = require('lodash');
 var karma = require('karma').server;
@@ -35,8 +37,14 @@ gulp.task('uglify', function() {
 });
 
 gulp.task('sass', function () {
-  gulp.src('./src/*.scss')
+  var css = fs.readFileSync('./src/angular-pickadate.scss');
+
+  gulp.src('./src/themes/*.scss')
+    .pipe(footer(css.toString()))
     .pipe(sass({ errLogToConsole: true }))
+    .pipe(rename(function(path) {
+      path.basename = 'angular-pickadate-' + path.basename;
+    }))
     .pipe(gulp.dest('./dist'));
 });
 
@@ -61,6 +69,10 @@ gulp.task('test:legacy', legacyVersions.map(function(version) {
   return 'test:legacy:' + version;
 }));
 
+gulp.task('dev', function() {
+  gulp.watch('./src/**/*.scss', ['sass']);
+});
+
 /**
  * Run test once and exit
  */
@@ -73,11 +85,4 @@ gulp.task('tdd', function (done) {
   karma.start(karmaConfFor('1.4.0'), done);
 });
 
-gulp.task('live_sass', function() {
-  gulp.watch('./src/**/*.scss', ['sass']);
-});
-
 gulp.task('default', ['tdd']);
-
-
-
