@@ -43,15 +43,16 @@
     font-size: 12px;
     color: #666666; }
   .pickadate-cell .pickadate-today {
-    background-color: #eaeaea; }
+    background-color: #EAEAEA; }
   .pickadate-cell .pickadate-active {
-    background-color: #b52a00;
-    color: white; }
+    background-color: #B52A00;
+    color: #FFFFFF; }
   .pickadate-cell .pickadate-head {
     border-top: 1px solid #DCDCDC;
-    background: #f3f3f3; }
+    background: #F3F3F3;
+    font-size: 12px; }
     .pickadate-cell .pickadate-head:nth-child(1), .pickadate-cell .pickadate-head:nth-child(7) {
-      background: #f3f3f3; }
+      background: #F3F3F3; }
 
 .pickadate-centered-heading {
   font-weight: normal;

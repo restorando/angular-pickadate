@@ -73,4 +73,11 @@ gulp.task('tdd', function (done) {
   karma.start(karmaConfFor('1.4.0'), done);
 });
 
+gulp.task('live_sass', function() {
+  gulp.watch('./src/**/*.scss', ['sass']);
+});
+
 gulp.task('default', ['tdd']);
+
+
+
