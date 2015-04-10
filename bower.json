@@ -14,8 +14,8 @@
     "date"
   ],
   "main": [
-    "src/angular-pickadate.js",
-    "src/angular-pickadate.css"
+    "dist/angular-pickadate.js",
+    "dist/angular-pickadate.css"
   ],
   "dependencies": {
     "angular": "1.x"
