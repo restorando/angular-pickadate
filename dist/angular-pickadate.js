@@ -297,6 +297,7 @@
                 classNames.push('pickadate-enabled');
               }
 
+              if (dateObj.getMonth() !== initialDate.getMonth()) classNames.push('pickadate-another-month');
               if (isDisabled)     classNames.push('pickadate-unavailable');
               if (date === today) classNames.push('pickadate-today');
 
