@@ -149,6 +149,7 @@
           maxDate: '=',
           disabledDates: '=',
           weekStartsOn: '=',
+          onDateSelect: '&'
         },
 
         link: function(scope, element, attrs, ngModel)  {
@@ -158,7 +159,7 @@
               selectedDates = [],
               wantsModal    = element[0] instanceof HTMLInputElement,
               compiledHtml  = $compile(TEMPLATE)(scope),
-              format        = (attrs.format || 'yyyy-MM-dd').replace(/m/g, 'M'),
+              format        = (attrs.format || 'yyyy-MM-dd').replace(/m/g, 'M')
               minDate, maxDate;
 
           scope.displayPicker = !wantsModal;
@@ -172,6 +173,7 @@
             selectedDates = allowMultiple ? toggleDate(dateObj.date, selectedDates) : [dateObj.date];
             setViewValue(selectedDates);
             scope.displayPicker = !wantsModal;
+            scope.onDateSelect({date: (allowMultiple ? selectedDates : selectedDates[0])});
           };
 
           var $render = ngModel.$render = function(options) {
