@@ -114,6 +114,14 @@ The calendar will support selecting multiple dates. NgModel will be set as an ar
 <div pickadate multiple></div>
 ```
 
+#### on-date-select
+
+The calendar will call the specified callback function with the ```date``` attribute when a date gets selected.
+
+```html
+<div pickadate on-date-select="saveDate(date)"></div>
+```
+
 ### I18n & Icons
 
 Pickadate uses angular `$locale` module for the date translations. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [https://code.angularjs.org/1.3.0/i18n/](https://code.angularjs.org/1.3.0/i18n/).
