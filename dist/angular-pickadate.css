@@ -38,6 +38,8 @@
     color: #DCDCDC; }
     .pickadate-cell .pickadate-disabled a {
       color: #DCDCDC; }
+  .pickadate-cell .pickadate-another-month {
+    color: #EEEEEE; }
   .pickadate-cell .pickadate-enabled {
     cursor: pointer;
     font-size: 12px;
