@@ -113,6 +113,29 @@ The calendar will support selecting multiple dates. NgModel will be set as an ar
 ```html
 <div pickadate multiple></div>
 ```
+#### next-month-selectable
+
+The calendar will allow selecting dates from the next month
+
+```html
+<div pickadate next-month-selectable></div>
+```
+
+#### previous-month-selectable
+
+Same as the one before, but for previous month dates
+
+```html
+<div pickadate previous-month-selectable></div>
+```
+
+#### no-month-boundaries
+
+The calendar will not restrict selecting dates from both the previous and next month
+
+```html
+<div pickadate no-month-boundaries></div>
+```
 
 ### I18n & Icons
 

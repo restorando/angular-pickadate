@@ -154,6 +154,9 @@
         link: function(scope, element, attrs, ngModel)  {
           var noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
               allowMultiple = attrs.hasOwnProperty('multiple'),
+              nextMonthSelectable = attrs.hasOwnProperty('nextMonthSelectable'),
+              previousMonthSelectable = attrs.hasOwnProperty('previousMonthSelectable'),
+              noMonthBoundaries = attrs.hasOwnProperty('noMonthBoundaries'),
               weekStartsOn  = scope.weekStartsOn,
               selectedDates = [],
               wantsModal    = element[0] instanceof HTMLInputElement,
@@ -332,7 +335,9 @@
           }
 
           function isOutOfRange(date) {
-            return date < minDate || date > maxDate || dateFilter(date, 'M') !== dateFilter(scope.currentDate, 'M');
+            return date < minDate || date > maxDate || !noMonthBoundaries &&
+              ((date.getMonth() < scope.currentDate.getMonth() && !previousMonthSelectable) ||
+              (date.getMonth() > scope.currentDate.getMonth() && !nextMonthSelectable));
           }
 
           function isDateDisabled(date) {
