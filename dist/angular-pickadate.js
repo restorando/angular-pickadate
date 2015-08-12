@@ -149,14 +149,15 @@
           maxDate: '=',
           disabledDates: '=',
           weekStartsOn: '=',
+          selectOtherMonths: '='
         },
 
         link: function(scope, element, attrs, ngModel)  {
           var noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
               allowMultiple = attrs.hasOwnProperty('multiple'),
-              nextMonthSelectable = attrs.hasOwnProperty('nextMonthSelectable'),
-              previousMonthSelectable = attrs.hasOwnProperty('previousMonthSelectable'),
-              noMonthBoundaries = attrs.hasOwnProperty('noMonthBoundaries'),
+              nextMonthSelectable = scope.selectOtherMonths === 'next',
+              previousMonthSelectable = scope.selectOtherMonths === 'previous',
+              noMonthBoundaries = scope.selectOtherMonths === 'both',
               weekStartsOn  = scope.weekStartsOn,
               selectedDates = [],
               wantsModal    = element[0] instanceof HTMLInputElement,
@@ -174,6 +175,11 @@
             if (isOutOfRange(dateObj.dateObj) || isDateDisabled(dateObj.date)) return;
             selectedDates = allowMultiple ? toggleDate(dateObj.date, selectedDates) : [dateObj.date];
             setViewValue(selectedDates);
+
+            var monthOffset = dateObj.dateObj.getMonth() - scope.currentDate.getMonth();
+            if (monthOffset !== 0)
+              scope.changeMonth(monthOffset);
+
             scope.displayPicker = !wantsModal;
           };
 
