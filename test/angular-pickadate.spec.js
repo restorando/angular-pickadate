@@ -9,7 +9,7 @@ describe('pickadate', function () {
       $document,
       pickadateI18nProvider,
       defaultHtml = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
-                      'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate">' +
+                      'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate" select-other-months="selectOtherMonths">' +
                     '</div>';
 
   beforeEach(module('pickadate'));
@@ -184,6 +184,90 @@ describe('pickadate', function () {
 
     });
 
+  });
+
+  describe('Month boundaries restrictions', function() {
+
+    beforeEach(function() {
+      $scope.date = '2014-05-17';
+      compile();
+    });
+
+    describe("when selectOtherMonths attribute has the 'next' value", function() {
+
+      beforeEach(function() {
+        $scope.selectOtherMonths = 'next';
+        compile();
+      });
+
+      it("adds 'pickadate-enabled' class to next month dates", function() {
+        expect($('li').last()).to.have.class('pickadate-enabled');
+      });
+
+      it("doesn't add 'pickadate-enabled' class to previous month dates", function() {
+        expect($('li:contains(29)').first()).not.to.have.class('pickadate-enabled');
+      });
+
+      it("changes to the next month if a date from that other month is clicked", function() {
+        browserTrigger($('li').last(), 'click');
+        expect($('.pickadate-centered-heading')).to.have.text('June 2014');
+      });
+    });
+
+    describe("when selectOtherMonths attribute has the 'previous' value", function() {
+
+      beforeEach(function() {
+        $scope.selectOtherMonths = 'previous';
+        compile();
+      });
+
+      it("doesn't add 'pickadate-enabled' class to next month dates", function() {
+        expect($('li').last()).not.to.have.class('pickadate-enabled');
+      });
+
+      it("adds 'pickadate-enabled' class to previous month dates", function() {
+        expect($('li:contains(29)').first()).to.have.class('pickadate-enabled');
+      });
+
+      it("changes to the previous month if a date from that other month is clicked", function() {
+        browserTrigger($('li:contains(29)').first(), 'click');
+        expect($('.pickadate-centered-heading')).to.have.text('April 2014');
+      });
+    });
+
+    describe("when selectOtherMonths attribute has the 'both' value", function() {
+
+      beforeEach(function() {
+        $scope.selectOtherMonths = 'both';
+        compile();
+      });
+
+      it("adds 'pickadate-enabled' class to next month dates", function() {
+        expect($('li').last()).to.have.class('pickadate-enabled');
+      });
+
+      it("adds 'pickadate-enabled' class to previous month dates", function() {
+        expect($('li:contains(29)').first()).to.have.class('pickadate-enabled');
+      });
+
+      it("changes to the next month if a date from that other month is clicked", function() {
+        browserTrigger($('li').last(), 'click');
+        expect($('.pickadate-centered-heading')).to.have.text('June 2014');
+      });
+
+      it("changes to the previous month if a date from that other month is clicked", function() {
+        browserTrigger($('li:contains(29)').first(), 'click');
+        expect($('.pickadate-centered-heading')).to.have.text('April 2014');
+      });
+    });
+
+    describe("when selectOtherMonths attribute has no value", function() {
+
+      it("both previous and next month dates are disabled", function() {
+        expect($('li').last()).not.to.have.class('pickadate-enabled');
+        expect($('li:contains(29)').first()).not.to.have.class('pickadate-enabled');
+      });
+    });
   });
 
   describe('Month Navigation', function() {
