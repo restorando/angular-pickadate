@@ -148,12 +148,14 @@
           minDate: '=',
           maxDate: '=',
           disabledDates: '=',
-          weekStartsOn: '=',
+          weekStartsOn: '='
         },
 
         link: function(scope, element, attrs, ngModel)  {
           var noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
               allowMultiple = attrs.hasOwnProperty('multiple'),
+              nextMonthSelectable = /^(next|both)$/.test(attrs.selectOtherMonths),
+              previousMonthSelectable = /^(previous|both)$/.test(attrs.selectOtherMonths),
               weekStartsOn  = scope.weekStartsOn,
               selectedDates = [],
               wantsModal    = element[0] instanceof HTMLInputElement,
@@ -168,9 +170,14 @@
           }
 
           scope.setDate = function(dateObj) {
+            var monthOffset = getMonthOffset(dateObj.dateObj);
+
             if (isOutOfRange(dateObj.dateObj) || isDateDisabled(dateObj.date)) return;
             selectedDates = allowMultiple ? toggleDate(dateObj.date, selectedDates) : [dateObj.date];
             setViewValue(selectedDates);
+
+            if (monthOffset !== 0) scope.changeMonth(monthOffset);
+
             scope.displayPicker = !wantsModal;
           };
 
@@ -332,7 +339,16 @@
           }
 
           function isOutOfRange(date) {
-            return date < minDate || date > maxDate || dateFilter(date, 'M') !== dateFilter(scope.currentDate, 'M');
+            var monthOffset = getMonthOffset(date);
+
+            return date < minDate || date > maxDate ||
+              (monthOffset === -1 && !previousMonthSelectable) ||
+              (monthOffset === 1 && !nextMonthSelectable);
+          }
+
+          function getMonthOffset(date){
+            return date.getMonth() - scope.currentDate.getMonth() +
+             (12 * (date.getFullYear() - scope.currentDate.getFullYear()));
           }
 
           function isDateDisabled(date) {
