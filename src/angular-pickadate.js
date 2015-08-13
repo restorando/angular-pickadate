@@ -154,8 +154,8 @@
         link: function(scope, element, attrs, ngModel)  {
           var noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
               allowMultiple = attrs.hasOwnProperty('multiple'),
-              nextMonthSelectable = attrs.selectOtherMonths === 'next' || attrs.selectOtherMonths === 'both',
-              previousMonthSelectable = attrs.selectOtherMonths === 'previous' || attrs.selectOtherMonths === 'both',
+              nextMonthSelectable = /^(next|both)$/.test(attrs.selectOtherMonths),
+              previousMonthSelectable = /^(previous|both)$/.test(attrs.selectOtherMonths),
               weekStartsOn  = scope.weekStartsOn,
               selectedDates = [],
               wantsModal    = element[0] instanceof HTMLInputElement,
