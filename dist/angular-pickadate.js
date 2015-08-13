@@ -148,16 +148,14 @@
           minDate: '=',
           maxDate: '=',
           disabledDates: '=',
-          weekStartsOn: '=',
-          selectOtherMonths: '='
+          weekStartsOn: '='
         },
 
         link: function(scope, element, attrs, ngModel)  {
           var noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
               allowMultiple = attrs.hasOwnProperty('multiple'),
-              nextMonthSelectable = scope.selectOtherMonths === 'next',
-              previousMonthSelectable = scope.selectOtherMonths === 'previous',
-              noMonthBoundaries = scope.selectOtherMonths === 'both',
+              nextMonthSelectable = attrs.selectOtherMonths === 'next' || attrs.selectOtherMonths === 'both',
+              previousMonthSelectable = attrs.selectOtherMonths === 'previous' || attrs.selectOtherMonths === 'both',
               weekStartsOn  = scope.weekStartsOn,
               selectedDates = [],
               wantsModal    = element[0] instanceof HTMLInputElement,
@@ -172,13 +170,13 @@
           }
 
           scope.setDate = function(dateObj) {
+            var monthOffset = getMonthOffset(dateObj.dateObj);
+
             if (isOutOfRange(dateObj.dateObj) || isDateDisabled(dateObj.date)) return;
             selectedDates = allowMultiple ? toggleDate(dateObj.date, selectedDates) : [dateObj.date];
             setViewValue(selectedDates);
 
-            var monthOffset = dateObj.dateObj.getMonth() - scope.currentDate.getMonth();
-            if (monthOffset !== 0)
-              scope.changeMonth(monthOffset);
+            if (monthOffset !== 0) scope.changeMonth(monthOffset);
 
             scope.displayPicker = !wantsModal;
           };
@@ -341,9 +339,16 @@
           }
 
           function isOutOfRange(date) {
-            return date < minDate || date > maxDate || !noMonthBoundaries &&
-              ((date.getMonth() < scope.currentDate.getMonth() && !previousMonthSelectable) ||
-              (date.getMonth() > scope.currentDate.getMonth() && !nextMonthSelectable));
+            var monthOffset = getMonthOffset(date);
+
+            return date < minDate || date > maxDate ||
+              (monthOffset === -1 && !previousMonthSelectable) ||
+              (monthOffset === 1 && !nextMonthSelectable);
+          }
+
+          function getMonthOffset(date){
+            return date.getMonth() - scope.currentDate.getMonth() +
+             (12 * (date.getFullYear() - scope.currentDate.getFullYear()));
           }
 
           function isDateDisabled(date) {

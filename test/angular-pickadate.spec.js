@@ -9,7 +9,7 @@ describe('pickadate', function () {
       $document,
       pickadateI18nProvider,
       defaultHtml = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
-                      'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate" select-other-months="selectOtherMonths">' +
+                      'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate" select-other-months="next">' +
                     '</div>';
 
   beforeEach(module('pickadate'));
@@ -195,11 +195,6 @@ describe('pickadate', function () {
 
     describe("when selectOtherMonths attribute has the 'next' value", function() {
 
-      beforeEach(function() {
-        $scope.selectOtherMonths = 'next';
-        compile();
-      });
-
       it("adds 'pickadate-enabled' class to next month dates", function() {
         expect($('li').last()).to.have.class('pickadate-enabled');
       });
@@ -212,13 +207,31 @@ describe('pickadate', function () {
         browserTrigger($('li').last(), 'click');
         expect($('.pickadate-centered-heading')).to.have.text('June 2014');
       });
+
+      describe("when the month is December", function() {
+
+        beforeEach(function() {
+          $scope.date = '2014-12-22';
+          compile();
+        });
+
+        it("adds 'pickadate-enabled' class to next month/year dates", function() {
+          expect($('li').last()).to.have.class('pickadate-enabled');
+        });
+
+        it("changes to January when a date from that month is clicked", function() {
+          browserTrigger($('li').last(), 'click');
+          expect($('.pickadate-centered-heading')).to.have.text('January 2015');
+        });
+      });
     });
 
     describe("when selectOtherMonths attribute has the 'previous' value", function() {
 
+      var html = '<div pickadate ng-model="date" select-other-months="previous"></div>';
+
       beforeEach(function() {
-        $scope.selectOtherMonths = 'previous';
-        compile();
+        compile(html);
       });
 
       it("doesn't add 'pickadate-enabled' class to next month dates", function() {
@@ -233,13 +246,31 @@ describe('pickadate', function () {
         browserTrigger($('li:contains(29)').first(), 'click');
         expect($('.pickadate-centered-heading')).to.have.text('April 2014');
       });
+
+      describe("when the month is January", function() {
+
+        beforeEach(function() {
+          $scope.date = '2015-01-22';
+          compile(html);
+        });
+
+        it("adds 'pickadate-enabled' class to previous month/year dates", function() {
+          expect($('li:contains(29)').first()).to.have.class('pickadate-enabled');
+        });
+
+        it("changes to December when a date from that month is clicked", function() {
+          browserTrigger($('li:contains(29)').first(), 'click');
+          expect($('.pickadate-centered-heading')).to.have.text('December 2014');
+        });
+      });
     });
 
     describe("when selectOtherMonths attribute has the 'both' value", function() {
 
+      var html = '<div pickadate ng-model="date" select-other-months="both"></div>';
+
       beforeEach(function() {
-        $scope.selectOtherMonths = 'both';
-        compile();
+        compile(html);
       });
 
       it("adds 'pickadate-enabled' class to next month dates", function() {
@@ -263,7 +294,10 @@ describe('pickadate', function () {
 
     describe("when selectOtherMonths attribute has no value", function() {
 
+      var html = '<div pickadate ng-model="date" select-other-months=""></div>';
+
       it("both previous and next month dates are disabled", function() {
+        compile(html);
         expect($('li').last()).not.to.have.class('pickadate-enabled');
         expect($('li:contains(29)').first()).not.to.have.class('pickadate-enabled');
       });

@@ -115,16 +115,14 @@ The calendar will support selecting multiple dates. NgModel will be set as an ar
 ```
 #### select-other-months
 
-This attribute can take the following values:
+This attribute can take the following string values:
 
-- `'next'` the calendar will allow selecting dates from the next month
-- `'previous'` same as the one before, but for previous month dates
-- `'both'` the calendar will allow selecting dates from both the next and previous month
-
-As well as `min-date` and `max-date`, `select-other-months` takes an angular expression, so if you want to specify the value inline, you shall use the quotes.
+- `next`: the calendar will allow selecting dates from the next month
+- `previous`: same as the one before, but for previous month dates
+- `both`: the calendar will allow selecting dates from both the next and previous month
 
 ```html
-<div pickadate select-other-months="'next'"></div>
+<div pickadate select-other-months="next"></div>
 ```
 
 ### I18n & Icons
