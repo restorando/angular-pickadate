@@ -436,6 +436,16 @@ describe('pickadate', function () {
       expect($('.pickadate-centered-heading')).to.have.text('August 2014');
     });
 
+    it("render the next month if auto value is selected and all dates from the current month are unavailable" , function() {
+      this.clock = sinon.useFakeTimers(1450640448000); // 2015-12-20
+      $scope.defaultDate   = 'auto';
+      $scope.disabledDates = [];
+      for (var i=20; i<32; i++)
+        $scope.disabledDates.push('2015-12-' + i);
+      compile();
+
+      expect($('.pickadate-centered-heading')).to.have.text('January 2016');
+    });
   });
 
   describe('Translations', function() {
