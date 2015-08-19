@@ -190,8 +190,13 @@
               selectedDates = [ngModel.$viewValue];
             }
 
-            scope.currentDate = dateUtils.parseDate(scope.defaultDate, format) ||
-              dateUtils.parseDate(selectedDates[0], format) || new Date();
+            if (scope.defaultDate === 'auto'){
+              var dateFrom = new Date();
+              scope.currentDate = getFirstEnabledDateFrom(dateFrom) || dateFrom;
+            } else {
+              scope.currentDate = dateUtils.parseDate(scope.defaultDate, format) ||
+                dateUtils.parseDate(selectedDates[0], format) || new Date();
+            }
 
             selectedDates = enabledDatesOf(selectedDates);
 
@@ -364,6 +369,16 @@
               dateArray.splice(index, 1);
             }
             return dateArray;
+          }
+
+          function getFirstEnabledDateFrom(date){
+            while ((!maxDate || date < maxDate) && isDateDisabled(dateFilter(date, format))){
+              date.setDate(date.getDate() + 1);
+            }
+
+            if (!maxDate || date < maxDate) return date;
+
+            return null; //if a limit has been reached it means all dates are disabled
           }
         }
       };
