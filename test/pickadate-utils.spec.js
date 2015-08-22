@@ -70,19 +70,11 @@ describe('pickadateUtils', function () {
   });
 
   describe('buildDates', function() {
-    var date,
-        weekStartsOn,
-        d = function(date) {
-          return utils().parseDate(date);
-        };
 
-    beforeEach(function() {
-      date = d('2015-01-01');
-      weekStartsOn = 0;
-    });
+    function d(date) { return utils().parseDate(date); }
 
     it('returns the correct dates', function() {
-      var dates = utils().buildDates(date, { weekStartsOn: weekStartsOn });
+      var dates = utils().buildDates(2015, 0, { weekStartsOn: 0 });
 
       expect(dates[0].date).to.deep.equal(d('2014-12-28'));
       expect(dates[3].date).to.deep.equal(d('2014-12-31'));
@@ -93,23 +85,21 @@ describe('pickadateUtils', function () {
     });
 
     it('has 6 rows of dates by default', function() {
-      expect(utils().buildDates(date, { weekStartsOn: weekStartsOn })).to.have.length(6 * 7);
+      expect(utils().buildDates(2015, 0, { weekStartsOn: 0 })).to.have.length(6 * 7);
     });
 
     it('should not add empty rows when told not to', function() {
-      expect(utils().buildDates(date, { weekStartsOn: weekStartsOn, noExtraRows: true })).to.have.length(5 * 7);
+      expect(utils().buildDates(2015, 0, { weekStartsOn: 0, noExtraRows: true })).to.have.length(5 * 7);
     });
 
     it('adds 2 extra rows when required', function() {
-      var date = d('2015-02-01');
-
-      expect(utils().buildDates(date, { weekStartsOn: weekStartsOn, noExtraRows: false })).to.have.length(6 * 7);
-      expect(utils().buildDates(date, { weekStartsOn: weekStartsOn, noExtraRows: true })).to.have.length(4 * 7);
-      expect(utils().buildDates(date, { weekStartsOn: 1, noExtraRows: true })).to.have.length(5 * 7);
+      expect(utils().buildDates(2015, 1, { weekStartsOn: 0, noExtraRows: false })).to.have.length(6 * 7);
+      expect(utils().buildDates(2015, 1, { weekStartsOn: 0, noExtraRows: true })).to.have.length(4 * 7);
+      expect(utils().buildDates(2015, 1, { weekStartsOn: 1, noExtraRows: true })).to.have.length(5 * 7);
     });
 
     it('works when the week starts on monday', function() {
-      var dates = utils().buildDates(date, { weekStartsOn: 1 });
+      var dates = utils().buildDates(2015, 0, { weekStartsOn: 1 });
 
       expect(dates[0].date).to.deep.equal(d('2014-12-29'));
       expect(dates[3].date).to.deep.equal(d('2015-01-01'));
@@ -118,7 +108,7 @@ describe('pickadateUtils', function () {
     });
 
     it('works when the week starts on saturday', function() {
-      var dates = utils().buildDates(date, { weekStartsOn: 6 });
+      var dates = utils().buildDates(2015, 0, { weekStartsOn: 6 });
 
       expect(dates[0].date).to.deep.equal(d('2014-12-27'));
       expect(dates[5].date).to.deep.equal(d('2015-01-01'));
