@@ -14,9 +14,9 @@ describe('pickadate', function () {
 
   beforeEach(module('pickadate'));
 
-  beforeEach(module(function(_pickadateI18nProvider_) {
+  beforeEach(module(['pickadateI18nProvider', function(_pickadateI18nProvider_) {
     pickadateI18nProvider = _pickadateI18nProvider_;
-  }));
+  }]));
 
   beforeEach(function() {
     inject(function($rootScope, _$compile_, _$document_){
