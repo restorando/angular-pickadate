@@ -7,15 +7,6 @@
     return -1;
   };
 
-  function isDescendant(parent, child) {
-    var node = child.parentNode;
-    while (node !== null) {
-      if (node === parent) return true;
-      node = node.parentNode;
-    }
-    return false;
-  }
-
   function map(items, property) {
     var mappedArray = [];
     angular.forEach(items, function(item) {
@@ -45,7 +36,58 @@
       };
     })
 
-    .factory('pickadateUtils', ['$locale', 'dateFilter', function($locale, dateFilter) {
+    .factory('pickadateModalBindings', ['$window', '$document', function($window, $document) {
+      var supportPageOffset = $window.pageXOffset !== undefined,
+          isCSS1Compat = (($document.compatMode || "") === "CSS1Compat");
+
+      var computeStyles = function(element) {
+        var scrollX = supportPageOffset ? $window.pageXOffset : isCSS1Compat ? $document.documentElement.scrollLeft : $document.body.scrollLeft,
+            scrollY = supportPageOffset ? $window.pageYOffset : isCSS1Compat ? $document.documentElement.scrollTop : $document.body.scrollTop,
+            innerWidth = $window.innerWidth || $document.documentElement.clientWidth || $document.body.clientWidth,
+            styles = { top: scrollY + element.getBoundingClientRect().bottom + 'px' };
+
+        if ((innerWidth - element.getBoundingClientRect().left ) >= 300) {
+          styles.left = scrollX + element.getBoundingClientRect().left  + 'px';
+        } else {
+          styles.right = innerWidth - element.getBoundingClientRect().right - scrollX + 'px';
+        }
+
+        return styles;
+      };
+
+      var isDescendant = function(parent, child) {
+        var node = child.parentNode;
+        while (node !== null) {
+          if (node === parent) return true;
+          node = node.parentNode;
+        }
+        return false;
+      };
+
+      return function(scope, element, rootNode) {
+        var togglePicker = function(toggle) {
+          scope.displayPicker = toggle;
+          scope.$apply();
+        };
+
+        element.on('focus', function() {
+          scope.modalStyles = computeStyles(element[0]);
+          togglePicker(true);
+        });
+
+        element.on('keydown', function(e) {
+          if (indexOf.call([9, 13, 27], e.keyCode) >= 0) togglePicker(false);
+        });
+
+        $document.on('click', function(e) {
+          if (isDescendant(rootNode, e.target) || e.target === element[0]) return;
+          togglePicker(false);
+        });
+      };
+
+    }])
+
+    .factory('pickadateDateHelper', ['$locale', 'dateFilter', function($locale, dateFilter) {
 
       function getPartName(part) {
         switch (part) {
@@ -63,9 +105,7 @@
         weekStartsOn = options.weekStartsOn;
         noExtraRows  = options.noExtraRows;
 
-        if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
-          weekStartsOn = 0;
-        }
+        if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) weekStartsOn = 0;
 
         return {
 
@@ -168,11 +208,12 @@
 
     }])
 
-    .directive('pickadate', ['$locale', '$sce', '$compile', '$document', '$window', 'pickadateUtils',
-      'pickadateI18n', 'filterFilter', function($locale, $sce, $compile, $document, $window, pickadateUtils, i18n, filter) {
+    .directive('pickadate', ['$locale', '$sce', '$compile', '$document', '$window', 'pickadateDateHelper',
+      'pickadateI18n', 'pickadateModalBindings', 'filterFilter', function($locale, $sce, $compile, $document, $window,
+                                                                          dateHelperFactory, i18n, modalBindings, filter) {
 
       var TEMPLATE =
-        '<div class="pickadate" ng-show="displayPicker" ng-style="styles">' +
+        '<div class="pickadate" ng-show="displayPicker" ng-style="modalStyles">' +
           '<div class="pickadate-header">' +
             '<div class="pickadate-controls">' +
               '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">' +
@@ -218,7 +259,7 @@
               wantsModal              = element[0] instanceof HTMLInputElement,
               compiledHtml            = $compile(TEMPLATE)(scope),
               format                  = (attrs.format || 'yyyy-MM-dd').replace(/m/g, 'M'),
-              dateUtils               = pickadateUtils(format, {
+              dateHelper              = dateHelperFactory(format, {
                 previousMonthSelectable: /^(previous|both)$/.test(attrs.selectOtherMonths),
                 nextMonthSelectable:     /^(next|both)$/.test(attrs.selectOtherMonths),
                 weekStartsOn: scope.weekStartsOn,
@@ -244,12 +285,12 @@
               selectedDates = [ngModel.$viewValue];
             }
 
-            scope.currentDate = dateUtils.parseDate(scope.defaultDate || selectedDates[0]) || new Date();
+            scope.currentDate = dateHelper.parseDate(scope.defaultDate || selectedDates[0]) || new Date();
 
-            dateUtils.setRestrictions(scope);
+            dateHelper.setRestrictions(scope);
 
             selectedDates = map(selectedDates, function(date) {
-              return dateUtils.buildDateObject(dateUtils.parseDate(date));
+              return dateHelper.buildDateObject(dateHelper.parseDate(date));
             });
 
             selectedDates = filter(selectedDates, { enabled: true });
@@ -280,48 +321,18 @@
             return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates]);
           }, $render);
 
-          // Insert datepicker into DOM (TODO: move most of this to its own service)
+          // Insert datepicker into DOM
           if (wantsModal) {
-            var togglePicker = function(toggle) {
-              scope.displayPicker = toggle;
-              scope.$apply();
-            };
-
-            element.on('focus', function() {
-              var supportPageOffset = $window.pageXOffset !== undefined,
-                  isCSS1Compat = (($document.compatMode || "") === "CSS1Compat"),
-                  scrollX = supportPageOffset ? $window.pageXOffset : isCSS1Compat ? $document.documentElement.scrollLeft : $document.body.scrollLeft,
-                  scrollY = supportPageOffset ? $window.pageYOffset : isCSS1Compat ? $document.documentElement.scrollTop : $document.body.scrollTop,
-                  innerWidth = $window.innerWidth || $document.documentElement.clientWidth || $document.body.clientWidth;
-
-              scope.styles = { top: scrollY + element[0].getBoundingClientRect().bottom + 'px' };
-
-              if ((innerWidth - element[0].getBoundingClientRect().left ) >= 300) {
-                scope.styles.left = scrollX + element[0].getBoundingClientRect().left  + 'px';
-              } else {
-                scope.styles.right = innerWidth - element[0].getBoundingClientRect().right - scrollX + 'px';
-              }
-
-              togglePicker(true);
-            });
-
-            element.on('keydown', function(e) {
-              if (indexOf.call([9, 13, 27], e.keyCode) >= 0) togglePicker(false);
-            });
+            modalBindings(scope, element, compiledHtml[0]);
 
             // if the user types a date, update the picker and set validity
             scope.$watch(function() {
               return ngModel.$viewValue;
             }, function(val) {
-              var isValidDate = dateUtils.parseDate(val);
+              var isValidDate = dateHelper.parseDate(val);
 
               if (isValidDate) $render({ skipRenderInput: true });
               ngModel.$setValidity('date', !!isValidDate);
-            });
-
-            $document.on('click', function(e) {
-              if (isDescendant(compiledHtml[0], e.target) || e.target === element[0]) return;
-              togglePicker(false);
             });
 
             // if the input element has a value, set it as the ng-model
@@ -335,11 +346,11 @@
           }
 
           function render() {
-            var dates = dateUtils.buildDates(scope.currentDate.getFullYear(), scope.currentDate.getMonth());
+            var dates = dateHelper.buildDates(scope.currentDate.getFullYear(), scope.currentDate.getMonth());
 
-            scope.allowPrevMonth = dateUtils.allowPrevMonth();
-            scope.allowNextMonth = dateUtils.allowNextMonth();
-            scope.dayNames       = dateUtils.buildDayNames();
+            scope.allowPrevMonth = dateHelper.allowPrevMonth();
+            scope.allowNextMonth = dateHelper.allowNextMonth();
+            scope.dayNames       = dateHelper.buildDayNames();
 
             scope.dates = map(dates, function(date) {
               date.classNames = [date.enabled ? 'pickadate-enabled' : 'pickadate-disabled'];
