@@ -56,10 +56,16 @@
       }
 
       return function(format, options) {
-        var minDate, maxDate, disabledDates, currentDate;
+        var minDate, maxDate, disabledDates, currentDate, weekStartsOn, noExtraRows;
 
-        options = options || {};
-        format  = format || 'yyyy-MM-dd';
+        options      = options || {};
+        format       = format  || 'yyyy-MM-dd';
+        weekStartsOn = options.weekStartsOn;
+        noExtraRows  = options.noExtraRows;
+
+        if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
+          weekStartsOn = 0;
+        }
 
         return {
 
@@ -132,12 +138,10 @@
             options        = options || {};
             currentDate    = angular.copy(date);
 
-            while (date.getDay() !== options.weekStartsOn) {
-              date.setDate(date.getDate() - 1);
-            }
+            while (date.getDay() !== weekStartsOn) date.setDate(date.getDate() - 1);
 
             for (var i = 0; i < 42; i++) {  // 42 == 6 rows of dates
-              if (options.noExtraRows && date.getDay() === options.weekStartsOn && date > lastDate) break;
+              if (noExtraRows && date.getDay() === weekStartsOn && date > lastDate) break;
 
               dates.push(this.buildDateObject(date));
               date.setDate(date.getDate() + 1);
@@ -146,14 +150,12 @@
             return dates;
           },
 
-          buildDayNames: function(weekStartsOn) {
+          buildDayNames: function() {
             var dayNames = $locale.DATETIME_FORMATS.SHORTDAY;
 
             if (weekStartsOn) {
               dayNames = dayNames.slice(0);
-              for (var i = 0; i < weekStartsOn; i++) {
-                dayNames.push(dayNames.shift());
-              }
+              for (var i = 0; i < weekStartsOn; i++) dayNames.push(dayNames.shift());
             }
             return dayNames;
           },
@@ -211,23 +213,19 @@
         },
 
         link: function(scope, element, attrs, ngModel)  {
-          var noExtraRows             = attrs.hasOwnProperty('noExtraRows'),
-              allowMultiple           = attrs.hasOwnProperty('multiple'),
-              weekStartsOn            = scope.weekStartsOn,
+          var allowMultiple           = attrs.hasOwnProperty('multiple'),
               selectedDates           = [],
               wantsModal              = element[0] instanceof HTMLInputElement,
               compiledHtml            = $compile(TEMPLATE)(scope),
               format                  = (attrs.format || 'yyyy-MM-dd').replace(/m/g, 'M'),
               dateUtils               = pickadateUtils(format, {
                 previousMonthSelectable: /^(previous|both)$/.test(attrs.selectOtherMonths),
-                nextMonthSelectable:     /^(next|both)$/.test(attrs.selectOtherMonths)
+                nextMonthSelectable:     /^(next|both)$/.test(attrs.selectOtherMonths),
+                weekStartsOn: scope.weekStartsOn,
+                noExtraRows: attrs.hasOwnProperty('noExtraRows')
               });
 
           scope.displayPicker = !wantsModal;
-
-          if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
-            weekStartsOn = 0;
-          }
 
           scope.setDate = function(dateObj) {
             if (!dateObj.enabled) return;
@@ -337,20 +335,19 @@
           }
 
           function render() {
-            var allDates = dateUtils.buildDates(scope.currentDate.getFullYear(), scope.currentDate.getMonth(),
-                                                     { weekStartsOn: weekStartsOn, noExtraRows: noExtraRows });
+            var dates = dateUtils.buildDates(scope.currentDate.getFullYear(), scope.currentDate.getMonth());
 
             scope.allowPrevMonth = dateUtils.allowPrevMonth();
             scope.allowNextMonth = dateUtils.allowNextMonth();
-            scope.dayNames       = dateUtils.buildDayNames(weekStartsOn);
+            scope.dayNames       = dateUtils.buildDayNames();
 
-            scope.dates = map(allDates, function(dateObj) {
-              dateObj.classNames = [dateObj.enabled ? 'pickadate-enabled' : 'pickadate-disabled'];
+            scope.dates = map(dates, function(date) {
+              date.classNames = [date.enabled ? 'pickadate-enabled' : 'pickadate-disabled'];
 
-              if (dateObj.today)    dateObj.classNames.push('pickadate-today');
-              if (dateObj.disabled) dateObj.classNames.push('pickadate-unavailable');
+              if (date.today)    date.classNames.push('pickadate-today');
+              if (date.disabled) date.classNames.push('pickadate-unavailable');
 
-              return dateObj;
+              return date;
             });
           }
 
