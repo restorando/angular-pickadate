@@ -1,11 +1,11 @@
 .pickadate {
-  font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
+  font-family: $font-family;
 
   a {
     &:visited {
-      color: #666666;
+      color: $anchor-font-color;
     }
-    color: #666666;
+    color: $anchor-font-color;
   }
 }
 
@@ -18,7 +18,7 @@
   padding: 0;
   width: 100%;
   text-align: center;
-  font-size: 12px;
+  font-size: $main-font-size;
 }
 
 .pickadate-cell {
@@ -28,53 +28,54 @@
   li {
     display: block;
     float: left;
-    border: 1px solid #DCDCDC;
-    border-width: 0 1px 1px 0;
+    border: $cell-border;
+    border-width: 0 $inner-cell-width $inner-cell-width 0;
     width: 14.285%;
-    padding: 1.3% 0 1.3% 0;
+    padding: $cell-default-padding 0 $cell-default-padding 0;
     line-height: normal;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     &:nth-child(7n+0) {
-      border-right: 1px solid #DCDCDC;
+      border-right: $cell-border;
     }
     &:nth-child(1), &:nth-child(8), &:nth-child(15), &:nth-child(22), &:nth-child(29), &:nth-child(36) {
-      border-left: 1px solid #DCDCDC;
+      border-left: $cell-border;
     }
   }
   .pickadate-disabled {
-    color: #DCDCDC;
+    color: $disabled-color;
     a {
-      color: #DCDCDC;
+      color: $disabled-color;
     }
   }
   .pickadate-enabled {
     cursor: pointer;
-    font-size: 12px;
-    color: #666666;
+    font-size: $main-font-size;
+    color: $anchor-font-color;
   }
   .pickadate-today {
-    background-color: #eaeaea;
+    background-color: $cell-today-background-color;
   }
   .pickadate-active {
-    background-color: #b52a00;
-    color: white;
+    background-color: $cell-active-background-color;
+    color: $cell-active-font-color;
   }
   .pickadate-head {
-    border-top: 1px solid #DCDCDC;
-    background: #f3f3f3;
+    border-top: $cell-border;
+    background: $month-names-background-color;
+    font-size: $month-names-font-size;
     &:nth-child(1), &:nth-child(7) {
-      background: #f3f3f3;
+      background: $month-names-background-color;
     }
   }
 }
 
 .pickadate-centered-heading {
-  font-weight: normal;
+  font-weight: $heading-font-weight;
   text-align: center;
-  font-size: 1em;
-  margin: 13px 0 13px 0;
+  font-size: $heading-font-size;
+  margin: $heading-margin 0 $heading-margin 0;
   line-height: normal;
 }
 
@@ -87,7 +88,7 @@
   }
   a {
     text-decoration: none;
-    font-size: 0.9em;
+    font-size: $controls-font-size;
   }
 }
 

@@ -24,6 +24,7 @@
   "devDependencies": {
     "del": "^1.1.1",
     "gulp": "^3.8.7",
+    "gulp-footer": "^1.0.5",
     "gulp-jshint": "^1.8.4",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^1.2.4",
