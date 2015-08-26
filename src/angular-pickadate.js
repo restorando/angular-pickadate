@@ -170,12 +170,11 @@
             };
           },
 
-          buildDates: function(year, month, options) {
+          buildDates: function(year, month) {
             var dates      = [],
                 date       = new Date(year, month, 1, 3),
                 lastDate   = new Date(year, month + 1, 0, 3);
 
-            options        = options || {};
             currentDate    = angular.copy(date);
 
             while (date.getDay() !== weekStartsOn) date.setDate(date.getDate() - 1);
@@ -202,6 +201,22 @@
 
           getMonthOffset: function(date1, date2) {
             return date1.getMonth() - date2.getMonth() + (12 * (date1.getFullYear() - date2.getFullYear()));
+          },
+
+          getFirstEnabledDateWithoutMonthRestriction: function(dateFrom) {
+              var enrichedDate = {};
+
+              dateFrom = dateFrom || new Date();
+              enrichedDate = this.buildDateObject(dateFrom);
+
+              while (enrichedDate.disabled && !enrichedDate.outOfMaxRange) {
+                dateFrom.setDate(dateFrom.getDate() + 1);
+                enrichedDate = this.buildDateObject(dateFrom);
+              }
+
+              // if the date is not disabled and hasn't reached the max date limit, then return it
+              if (!enrichedDate.disabled && !enrichedDate.outOfMaxRange) return dateFrom;
+              return null;
           }
         };
       };
@@ -246,7 +261,6 @@
       return {
         require: 'ngModel',
         scope: {
-          defaultDate: '=',
           minDate: '=',
           maxDate: '=',
           disabledDates: '=',
@@ -255,6 +269,7 @@
 
         link: function(scope, element, attrs, ngModel)  {
           var allowMultiple           = attrs.hasOwnProperty('multiple'),
+              defaultDate             = attrs.defaultDate,
               selectedDates           = [],
               wantsModal              = element[0] instanceof HTMLInputElement,
               compiledHtml            = $compile(TEMPLATE)(scope),
@@ -285,9 +300,14 @@
               selectedDates = [ngModel.$viewValue];
             }
 
-            scope.currentDate = dateHelper.parseDate(scope.defaultDate || selectedDates[0]) || new Date();
-
+            scope.currentDate = dateHelper.parseDate(defaultDate || selectedDates[0]) || new Date();
             dateHelper.setRestrictions(scope);
+
+            if (defaultDate === 'auto') {
+              scope.currentDate = dateHelper.getFirstEnabledDateWithoutMonthRestriction() || new Date();
+              dateHelper.currentDate = scope.currentDate;
+            }
+
 
             selectedDates = map(selectedDates, function(date) {
               return dateHelper.buildDateObject(dateHelper.parseDate(date));
