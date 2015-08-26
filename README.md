@@ -79,15 +79,10 @@ function MyAppController($scope) {
 #### default-date
 
 Allows you to preset the calendar to a particular month without setting the chosen date.
+Also it can take the `auto` parameter, which will preset the calendar to the first month to have an enabled date.
 
 ```html
-<div pickadate default-date="presetDate"></div>
-```
-
-```javascript
-function MyAppController($scope) {
-    $scope.presetDate = '2013-12-01';
-}
+<div pickadate default-date="2013-12-01"></div>
 ```
 
 #### week-starts-on

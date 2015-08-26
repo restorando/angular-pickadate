@@ -9,7 +9,7 @@ describe('pickadate', function () {
       $document,
       pickadateI18nProvider,
       defaultHtml = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
-                      'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate" select-other-months="next">' +
+                      'disabled-dates="disabledDates" week-starts-on="weekStartsOn" select-other-months="next">' +
                     '</div>';
 
   beforeEach(module('pickadate'));
@@ -400,8 +400,13 @@ describe('pickadate', function () {
   });
 
   describe('Default date', function() {
+    var html = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
+                 'default-date="2014-11-10">' +
+               '</div>';
+
     beforeEach(function() {
       this.clock = sinon.useFakeTimers(1431025777408);
+      compile(html);
     });
 
     afterEach(function() {
@@ -409,33 +414,49 @@ describe('pickadate', function () {
     });
 
     it("renders the specified yearMonth by default if no date is selected", function() {
-      $scope.defaultDate = '2014-11-10';
-      compile();
-
       expect($('.pickadate-centered-heading')).to.have.text('November 2014');
     });
 
     it("renders the specified yearMonth by default even if a date is selected", function() {
-      $scope.defaultDate = '2014-11-10';
-      $scope.date        = '2014-03-01';
-      compile();
-
+      $scope.date = '2014-03-01';
+      compile(html);
       expect($('.pickadate-centered-heading')).to.have.text('November 2014');
     });
 
     it("renders the current month if no date is selected and no default date is specified ", function() {
-      compile();
-
+      compile()
       expect($('.pickadate-centered-heading')).to.have.text('May 2015');
     });
 
     it("renders the selected date month if no default date is specified", function() {
       $scope.date = '2014-08-03';
       compile();
-
       expect($('.pickadate-centered-heading')).to.have.text('August 2014');
     });
 
+    describe('when it has the auto value', function() {
+      var html = '<div pickadate ng-model="date" disabled-dates="disabledDates"' +
+                   'max-date="maxDate" default-date="auto">' +
+                 '</div>';
+
+      beforeEach(function() {
+        this.clock = sinon.useFakeTimers(1450640448000); // 2015-12-20
+        $scope.disabledDates = [];
+        for (var i=20; i<32; i++) $scope.disabledDates.push('2015-12-' + i);
+        compile(html);
+      });
+
+      it("renders the next month if all dates from the current month are unavailable" , function() {
+        expect($('.pickadate-centered-heading')).to.have.text('January 2016');
+      });
+
+      it("doesn't render the next month if the maxDate has been reached" , function() {
+        $scope.maxDate = '2015-12-30';
+        compile(html);
+
+        expect($('.pickadate-centered-heading')).to.have.text('December 2015');
+      });
+    });
   });
 
   describe('Translations', function() {
