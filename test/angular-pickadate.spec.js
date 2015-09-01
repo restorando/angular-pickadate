@@ -583,7 +583,7 @@ describe('pickadate', function () {
   describe('When used as a modal', function() {
 
     var inputHtml = '<form name="dateForm">' +
-                      '<input pickadate ng-model="date" min-date="minDate" type="text"></input>' +
+                      '<input pickadate ng-model="date" min-date="minDate" custom-class="pickadate-custom" type="text"></input>' +
                     '</form>',
         input, form;
 
@@ -596,8 +596,13 @@ describe('pickadate', function () {
       element = $('.pickadate');
     });
 
+
     it('adds the pickadate-modal class', function() {
       expect(element).to.have.class('pickadate-modal');
+    });
+
+    it('adds the pickadate-custom class', function() {
+      expect(element).to.have.class('pickadate-custom');
     });
 
     it('renders the datepicker already hidden', function() {

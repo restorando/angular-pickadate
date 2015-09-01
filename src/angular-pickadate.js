@@ -255,6 +255,7 @@
 
         link: function(scope, element, attrs, ngModel)  {
           var allowMultiple           = attrs.hasOwnProperty('multiple'),
+              customClass             = attrs.hasOwnProperty('customClass') ? attrs.customClass : '',
               selectedDates           = [],
               wantsModal              = element[0] instanceof HTMLInputElement,
               compiledHtml            = $compile(TEMPLATE)(scope),
@@ -341,7 +342,15 @@
             });
 
             element.after(compiledHtml.addClass('pickadate-modal'));
+
+            if (customClass) {
+              element.after(compiledHtml.addClass(customClass));
+            }
           } else {
+            if (customClass) {
+              element.after(compiledHtml.addClass(customClass));
+            }
+
             element.append(compiledHtml);
           }
 
