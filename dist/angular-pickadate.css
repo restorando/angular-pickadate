@@ -47,6 +47,9 @@
   .pickadate-cell .pickadate-active {
     background-color: #b52a00;
     color: white; }
+  .pickadate-cell .pickadate-event-on-date {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: red; }
   .pickadate-cell .pickadate-head {
     border-top: 1px solid #DCDCDC;
     background: #f3f3f3; }

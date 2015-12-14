@@ -251,7 +251,8 @@
           maxDate: '=',
           disabledDates: '=',
           weekStartsOn: '=',
-          currentDate: '='
+          currentDate: '=',
+          datesWithEvents: '='
         },
 
         link: function(scope, element, attrs, ngModel)  {
@@ -303,7 +304,13 @@
           scope.classesFor = function(date) {
             var formattedDates = map(selectedDates, 'formattedDate'),
                 classes        = indexOf.call(formattedDates, date.formattedDate) >= 0 ? 'pickadate-active' : null;
-            return date.classNames.concat(classes);
+
+            var eventOnDay = null;
+            if(typeof scope.datesWithEvents != 'undefined') {
+              eventOnDay     = indexOf.call(scope.datesWithEvents, date.formattedDate) >= 0 ? 'pickadate-event-on-date' : null;
+            }
+
+            return date.classNames.concat(classes).concat(eventOnDay);
           };
 
           scope.changeMonth = function(offset) {
@@ -361,6 +368,8 @@
 
               return date;
             });
+
+            console.dir(scope.dates);
           }
 
           function setViewValue(value, options) {
