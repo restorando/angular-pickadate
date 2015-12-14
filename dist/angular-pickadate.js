@@ -250,7 +250,8 @@
           minDate: '=',
           maxDate: '=',
           disabledDates: '=',
-          weekStartsOn: '='
+          weekStartsOn: '=',
+          currentDate: '='
         },
 
         link: function(scope, element, attrs, ngModel)  {
