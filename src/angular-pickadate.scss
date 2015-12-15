@@ -62,8 +62,20 @@
     color: white;
   }
   .pickadate-event-on-date {
-    background-color: rgba(0,0,0,0.3);
-    color: red;
+    position: relative;
+  }
+  .pickadate-event-on-date::after {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+
+    border-style: solid;
+    border-width: 10px 10px 0 0;
+    border-color: #007bff transparent transparent transparent;
+
+    content: '';
   }
   .pickadate-head {
     border-top: 1px solid #DCDCDC;
