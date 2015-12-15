@@ -306,7 +306,7 @@
                 classes        = indexOf.call(formattedDates, date.formattedDate) >= 0 ? 'pickadate-active' : null;
 
             var eventOnDay = null;
-            if(typeof scope.datesWithEvents != 'undefined') {
+            if(typeof scope.datesWithEvents !== 'undefined') {
               eventOnDay     = indexOf.call(scope.datesWithEvents, date.formattedDate) >= 0 ? 'pickadate-event-on-date' : null;
             }
 
