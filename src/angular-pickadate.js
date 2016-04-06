@@ -329,7 +329,13 @@
             scope.$watch(function() {
               return ngModel.$viewValue;
             }, function(val) {
-              var isValidDate = dateHelper.parseDate(val);
+
+              var isValidDate = true;
+              if (!val) {
+                isValidDate = true;
+              } else {
+                isValidDate = dateUtils.parseDate(val, format);
+              }
 
               if (isValidDate) $render({ skipRenderInput: true });
               ngModel.$setValidity('date', !!isValidDate);
