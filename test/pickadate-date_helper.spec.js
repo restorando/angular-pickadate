@@ -117,6 +117,17 @@ describe('pickadate.dateHelper', function () {
       expect(dates.slice(-1)[0].date).to.deep.equal(d('2015-02-06'));
     });
 
+    it('disable weekends correctly', function() {
+      var dates = dateHelper(format, {disableWeekends: true}).buildDates(2016, 3);
+
+      expect(dates[13].disabled).to.be.true;
+      expect(dates[14].disabled).to.be.true;
+      expect(dates[20].disabled).to.be.true;
+      expect(dates[21].disabled).to.be.true;
+      expect(dates[27].disabled).to.be.true;
+      expect(dates[28].disabled).to.be.true;
+    });
+
   });
 
 });
