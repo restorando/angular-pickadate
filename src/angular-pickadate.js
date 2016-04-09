@@ -98,12 +98,13 @@
       }
 
       return function(format, options) {
-        var minDate, maxDate, disabledDates, currentDate, weekStartsOn, noExtraRows;
+        var minDate, maxDate, disabledDates, currentDate, weekStartsOn, noExtraRows, disableWeekends;
 
         options      = options || {};
         format       = format  || 'yyyy-MM-dd';
         weekStartsOn = options.weekStartsOn;
         noExtraRows  = options.noExtraRows;
+        disableWeekends = options.disableWeekends;
 
         if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) weekStartsOn = 0;
 
@@ -157,6 +158,11 @@
                 outOfMaxRange = localDate > maxDate,
                 outOfMonth    = (monthOffset === -1 && !options.previousMonthSelectable) ||
                                 (monthOffset === 1 && !options.nextMonthSelectable);
+
+            if (disableWeekends) {
+              var day = localDate.getDay();
+              disabled = day === 0 || day === 6 ? true : disabled;
+            }
 
             return {
               date: localDate,
@@ -263,7 +269,8 @@
                 previousMonthSelectable: /^(previous|both)$/.test(attrs.selectOtherMonths),
                 nextMonthSelectable:     /^(next|both)$/.test(attrs.selectOtherMonths),
                 weekStartsOn: scope.weekStartsOn,
-                noExtraRows: attrs.hasOwnProperty('noExtraRows')
+                noExtraRows: attrs.hasOwnProperty('noExtraRows'),
+                disableWeekends: attrs.hasOwnProperty('disableWeekends')
               });
 
           scope.displayPicker = !wantsModal;

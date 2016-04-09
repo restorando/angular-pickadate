@@ -76,6 +76,12 @@ function MyAppController($scope) {
 }
 ```
 
+#### disable-weekends
+
+```html
+<div pickadate ng-model="date" disable-weekends></div>
+```
+
 #### default-date
 
 Allows you to preset the calendar to a particular month without setting the chosen date.
