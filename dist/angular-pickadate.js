@@ -100,10 +100,11 @@
       return function(format, options) {
         var minDate, maxDate, disabledDates, currentDate, weekStartsOn, noExtraRows;
 
-        options      = options || {};
-        format       = format  || 'yyyy-MM-dd';
-        weekStartsOn = options.weekStartsOn;
-        noExtraRows  = options.noExtraRows;
+        options       = options || {};
+        format        = format  || 'yyyy-MM-dd';
+        weekStartsOn  = options.weekStartsOn;
+        noExtraRows   = options.noExtraRows;
+        disabledDates = options.disabledDates || angular.noop;
 
         if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) weekStartsOn = 0;
 
@@ -135,7 +136,6 @@
             minDate       = this.parseDate(restrictions.minDate) || new Date(0);
             maxDate       = this.parseDate(restrictions.maxDate) || new Date(99999999999999);
             currentDate   = restrictions.currentDate;
-            disabledDates = restrictions.disabledDates || [];
           },
 
           allowPrevMonth: function() {
@@ -151,7 +151,7 @@
           buildDateObject: function(date) {
             var localDate     = angular.copy(date),
                 formattedDate = dateFilter(localDate, format),
-                disabled      = indexOf.call(disabledDates, formattedDate) >= 0,
+                disabled      = disabledDates({date: localDate, formattedDate: formattedDate}),
                 monthOffset   = this.getMonthOffset(localDate, currentDate),
                 outOfMinRange = localDate < minDate,
                 outOfMaxRange = localDate > maxDate,
@@ -249,7 +249,7 @@
           defaultDate: '=',
           minDate: '=',
           maxDate: '=',
-          disabledDates: '=',
+          disabledDates: '&',
           weekStartsOn: '='
         },
 
@@ -263,7 +263,8 @@
                 previousMonthSelectable: /^(previous|both)$/.test(attrs.selectOtherMonths),
                 nextMonthSelectable:     /^(next|both)$/.test(attrs.selectOtherMonths),
                 weekStartsOn: scope.weekStartsOn,
-                noExtraRows: attrs.hasOwnProperty('noExtraRows')
+                noExtraRows: attrs.hasOwnProperty('noExtraRows'),
+                disabledDates: scope.disabledDates
               });
 
           scope.displayPicker = !wantsModal;
@@ -318,7 +319,7 @@
 
           // Workaround to watch multiple properties. XXX use $scope.$watchGroup in angular 1.3
           scope.$watch(function() {
-            return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates]);
+            return angular.toJson([scope.minDate, scope.maxDate]);
           }, $render);
 
           // Insert datepicker into DOM
