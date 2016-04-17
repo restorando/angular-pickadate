@@ -1,6 +1,6 @@
 {
   "name": "angular-pickadate",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "A simple and fluid inline datepicker for AngularJS with no extra dependencies",
   "main": "index.js",
   "scripts": {
@@ -22,17 +22,20 @@
   },
   "homepage": "https://github.com/restorando/angular-pickadate",
   "devDependencies": {
-    "del": "^1.1.1",
-    "gulp": "^3.8.7",
-    "gulp-jshint": "^1.8.4",
-    "gulp-rename": "^1.2.0",
-    "gulp-sass": "^1.2.4",
-    "gulp-uglify": "^1.0.2",
-    "jquery": "^2.1.1",
-    "karma": "^0.12.19",
-    "karma-chai-plugins": "^0.2.3",
-    "karma-mocha": "^0.1.7",
-    "karma-phantomjs-launcher": "^0.1.4",
-    "lodash": "^2.4.1"
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-jshint": "^2.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.2.0",
+    "gulp-uglify": "^1.5.3",
+    "jquery": "^2.2.3",
+    "jshint": "^2.9.1",
+    "karma": "^0.13.22",
+    "karma-chai-plugins": "^0.7.0",
+    "karma-mocha": "^0.2.2",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "lodash": "^4.11.1",
+    "mocha": "^2.4.5",
+    "phantomjs-prebuilt": "^2.1.7"
   }
 }

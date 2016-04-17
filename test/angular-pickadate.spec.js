@@ -9,7 +9,9 @@ describe('pickadate', function () {
       $document,
       pickadateI18nProvider,
       defaultHtml = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
-                      'disabled-dates="disabledDates" week-starts-on="weekStartsOn" default-date="defaultDate" select-other-months="next">' +
+                      'disabled-dates="disabledDatesFn(date, formattedDate)"' +
+                      'week-starts-on="weekStartsOn"' +
+                      'default-date="defaultDate" select-other-months="next">' +
                     '</div>';
 
   beforeEach(module('pickadate'));
@@ -23,6 +25,9 @@ describe('pickadate', function () {
       $scope = $rootScope.$new();
       $compile = _$compile_;
       $document = _$document_;
+      $scope.disabledDatesFn = function(date, formattedDate) {
+        return ($scope.disabledDates || []).indexOf(formattedDate) > -1;
+      }
     });
   });
 
@@ -103,20 +108,40 @@ describe('pickadate', function () {
 
     describe('Disabled dates', function() {
 
-      beforeEach(function() {
-        $scope.disabledDates = ['2014-05-20', '2014-05-26'];
-        compile();
+      describe('As an array', function() {
+        beforeEach(function() {
+          $scope.disabledDates = ['2014-05-20', '2014-05-26'];
+          compile();
+        });
+
+        it("adds the 'pickadate-unavailable' class to the disabled dates", function() {
+          expect($('li:contains(20)')).to.have.class('pickadate-unavailable');
+          expect($('li:contains(26)')).to.have.class('pickadate-unavailable');
+        });
+
+        it("doesn't change the selected date if an unavailable one is clicked", function() {
+          browserTrigger($('.pickadate-unavailable:contains(20)'), 'click');
+          expect($scope.date).to.equal('2014-05-17');
+        });
       });
 
-      it("adds the 'pickadate-unavailable' class to the disabled dates", function() {
-        expect($('li:contains(20)')).to.have.class('pickadate-unavailable');
-        expect($('li:contains(26)')).to.have.class('pickadate-unavailable');
-      });
+      describe('As a function', function() {
+        beforeEach(function() {
+          $scope.disabledDatesFn = function(date) {
+            return date.getDay() <= 1;
+          }
+          compile();
+        });
 
-      it("doesn't change the selected date if an unavailable one is clicked", function() {
-        browserTrigger($('.pickadate-unavailable:contains(20)'), 'click');
-        expect($scope.date).to.equal('2014-05-17');
-      });
+        it("adds the 'pickadate-unavailable' class to the disabled dates", function() {
+          expect($('li:contains(11)')).to.have.class('pickadate-unavailable');
+          expect($('li:contains(12)')).to.have.class('pickadate-unavailable');
+          expect($('li:contains(18)')).to.have.class('pickadate-unavailable');
+          expect($('li:contains(19)')).to.have.class('pickadate-unavailable');
+          expect($('li:contains(25)')).to.have.class('pickadate-unavailable');
+          expect($('li:contains(26)')).to.have.class('pickadate-unavailable');
+        });
+      })
 
     });
 
@@ -164,20 +189,6 @@ describe('pickadate', function () {
 
           expect($('.pickadate-centered-heading')).to.have.text('June 2014');
           expect($('li:contains(20)')).to.have.class('pickadate-active');
-        });
-
-      });
-
-      describe('Disabled dates', function() {
-
-        it("re-renders the calendar if disabled-dates is updated", function() {
-          compile();
-          expect($('li:contains(26)')).to.have.class('pickadate-unavailable');
-
-          $scope.disabledDates.pop();
-          $scope.$digest();
-
-          expect($('li:contains(26)')).not.to.have.class('pickadate-unavailable');
         });
 
       });
@@ -514,7 +525,7 @@ describe('pickadate', function () {
 
     beforeEach(function() {
       this.clock = sinon.useFakeTimers(1431025777408);
-      compile('<div pickadate ng-model="date" multiple disabled-dates="disabledDates"></div>');
+      compile('<div pickadate ng-model="date" multiple disabled-dates="disabledDatesFn(date, formattedDate)"></div>');
     });
 
     afterEach(function() {

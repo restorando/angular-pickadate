@@ -43,7 +43,7 @@ Format string can be composed of the following elements:
 * `'mm'` or `'MM'`: Month in year, padded (01-12)
 * `'dd'`: Day in month, padded (01-31)
 
-Every option that receives a date as the input (e.g. min-date, max-date, disabled-dates, etc) should be entered using the same format.
+Every option that receives a date as the input (e.g. min-date, max-date, etc) should be entered using the same format.
 
 #### min-date, max-date
 
@@ -66,13 +66,31 @@ function MyAppController($scope) {
 
 #### disabled-dates
 
+You can specify a function that will determine if a date is disabled or not. You can pass `formattedDate` as an argument to receive the date formatted in the current locale, or `date` to receive the date object. You can pass both of them if you need.
+
 ```html
-<div pickadate ng-model="date" disabled-dates="disabledDates"></div>
+<div pickadate ng-model="date" disabled-dates="disabledDatesFn(formattedDate)"></div>
 ```
 
 ```javascript
 function MyAppController($scope) {
-    $scope.disabledDates = ['2013-11-10', '2013-11-15', '2013-11-19'];
+    $scope.disabledDatesFn = function(formattedDate) {
+        return ['2013-11-10', '2013-11-15', '2013-11-19'].indexOf(formattedDate) > -1;
+    }
+}
+```
+
+This is handy if you want to disable dates programatically.
+
+```html
+<div pickadate ng-model="date" disabled-dates="disabledDatesFn(date)"></div>
+```
+
+```javascript
+function MyAppController($scope) {
+    $scope.disabledDatesFn = function(date) {
+        return date.getDay() === 6; // Disable every Sunday
+    }
 }
 ```
 
