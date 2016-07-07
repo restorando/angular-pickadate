@@ -376,7 +376,7 @@
           }
 
           function toggleDate(dateObj, dateArray) {
-            var index = indexOf.call(dateArray, dateObj);
+            var index = indexOf.call(map(dateArray, 'formattedDate'), dateObj.formattedDate);
             if (index === -1) {
               dateArray.push(dateObj);
             } else {
