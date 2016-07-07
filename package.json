@@ -1,6 +1,6 @@
 {
   "name": "angular-pickadate",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A simple and fluid inline datepicker for AngularJS with no extra dependencies",
   "main": "index.js",
   "scripts": {
