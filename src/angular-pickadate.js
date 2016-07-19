@@ -255,6 +255,7 @@
 
         link: function(scope, element, attrs, ngModel)  {
           var allowMultiple           = attrs.hasOwnProperty('multiple'),
+              allowBlank              = !attrs.hasOwnProperty('notBlank'),
               selectedDates           = [],
               wantsModal              = element[0] instanceof HTMLInputElement,
               compiledHtml            = $compile(TEMPLATE)(scope),
@@ -380,7 +381,9 @@
             if (index === -1) {
               dateArray.push(dateObj);
             } else {
-              dateArray.splice(index, 1);
+              if (allowBlank || (dateArray.length > 1)){
+                dateArray.splice(index, 1);
+              }
             }
             return dateArray;
           }
