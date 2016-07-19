@@ -617,6 +617,26 @@ describe('pickadate', function () {
 
     });
 
+    describe('Not blank', function() {
+      beforeEach(function() {
+        compile('<div pickadate ng-model="date" multiple not-blank></div>');
+      });
+
+      it("doesn't remove the last selected date", function() {
+        $scope.date = ['2015-05-25'];
+        $scope.$digest();
+        browserTrigger($('.pickadate-enabled:contains(25)'), 'click');
+        expect($scope.date).to.deep.equal(['2015-05-25']);
+      });
+
+      it("removes the selected date when it is not the last one", function() {
+        $scope.date = ['2015-05-25', '2015-05-20'];
+        $scope.$digest();
+        browserTrigger($('.pickadate-enabled:contains(25)'), 'click');
+        expect($scope.date).to.deep.equal(['2015-05-20']);
+      });
+    });
+
   });
 
   describe('When used as a modal', function() {
