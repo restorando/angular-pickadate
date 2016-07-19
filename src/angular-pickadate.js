@@ -255,6 +255,7 @@
 
         link: function(scope, element, attrs, ngModel)  {
           var allowMultiple           = attrs.hasOwnProperty('multiple'),
+              allowBlank              = attrs.hasOwnProperty('allowBlankDate'),
               selectedDates           = [],
               wantsModal              = element[0] instanceof HTMLInputElement,
               compiledHtml            = $compile(TEMPLATE)(scope),
@@ -271,7 +272,8 @@
 
           scope.setDate = function(dateObj) {
             if (!dateObj.enabled) return;
-            selectedDates = allowMultiple ? toggleDate(dateObj, selectedDates) : [dateObj];
+
+            selectedDates = toggleDate(dateObj, selectedDates);
 
             setViewValue(selectedDates);
 
@@ -378,10 +380,20 @@
           function toggleDate(dateObj, dateArray) {
             var index = indexOf.call(map(dateArray, 'formattedDate'), dateObj.formattedDate);
             if (index === -1) {
-              dateArray.push(dateObj);
-            } else {
+              dateArray = addDate(dateObj, dateArray);
+            } else if (allowBlank || (dateArray.length > 1)) {
               dateArray.splice(index, 1);
             }
+            return dateArray;
+          }
+
+          function addDate(dateObj, dateArray){
+            if (allowMultiple) {
+              dateArray.push(dateObj);
+            } else {
+              dateArray = [dateObj];
+            }
+
             return dateArray;
           }
         }
