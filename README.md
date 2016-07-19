@@ -132,9 +132,9 @@ The calendar will support selecting multiple dates. NgModel will be set as an ar
 <div pickadate multiple></div>
 ```
 
-##### not blank
+#### allow-blank-date
 
-The calendar will not allow user to remove the last remaining date.
+The calendar will allow user to remove the last remaining date.
 
 ```html
 <div pickadate multiple not-blank></div>

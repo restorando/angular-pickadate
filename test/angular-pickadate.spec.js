@@ -549,10 +549,11 @@ describe('pickadate', function () {
 
       it('removes the selected date of the ngModel array if it was previously selected', function() {
         browserTrigger($('.pickadate-enabled:contains(7)'), 'click');
-        expect($scope.date).to.deep.equal(['2015-05-07']);
+        browserTrigger($('.pickadate-enabled:contains(15)'), 'click');
+        expect($scope.date).to.deep.equal(['2015-05-07', '2015-05-15']);
 
         browserTrigger($('.pickadate-enabled:contains(7)'), 'click');
-        expect($scope.date).to.be.empty;
+        expect($scope.date).to.deep.equal(['2015-05-15']);
       });
     })
 
@@ -617,9 +618,9 @@ describe('pickadate', function () {
 
     });
 
-    describe('Not blank', function() {
+    describe("Don't allow blank date", function() {
       beforeEach(function() {
-        compile('<div pickadate ng-model="date" multiple not-blank></div>');
+        compile('<div pickadate ng-model="date" multiple></div>');
       });
 
       it("doesn't remove the last selected date", function() {
@@ -634,6 +635,19 @@ describe('pickadate', function () {
         $scope.$digest();
         browserTrigger($('.pickadate-enabled:contains(25)'), 'click');
         expect($scope.date).to.deep.equal(['2015-05-20']);
+      });
+    });
+
+    describe("Allow blank date", function() {
+      beforeEach(function() {
+        compile('<div pickadate ng-model="date" multiple allow-blank-date></div>');
+      });
+
+      it("removes the last selected date", function() {
+        $scope.date = ['2015-05-25'];
+        $scope.$digest();
+        browserTrigger($('.pickadate-enabled:contains(25)'), 'click');
+        expect($scope.date).to.be.empty;
       });
     });
 
