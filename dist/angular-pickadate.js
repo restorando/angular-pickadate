@@ -230,7 +230,7 @@
           '<div class="pickadate-body">' +
             '<div class="pickadate-main">' +
               '<ul class="pickadate-cell">' +
-                '<li class="pickadate-head" ng-repeat="dayName in dayNames">' +
+                '<li class="pickadate-head" ng-repeat="dayName in dayNames track by $index">' +
                   '{{dayName}}' +
                 '</li>' +
               '</ul>' +
@@ -249,6 +249,7 @@
           defaultDate: '=',
           minDate: '=',
           maxDate: '=',
+          dayNames: '=?',
           disabledDates: '&',
           weekStartsOn: '='
         },
@@ -353,7 +354,7 @@
 
             scope.allowPrevMonth = dateHelper.allowPrevMonth();
             scope.allowNextMonth = dateHelper.allowNextMonth();
-            scope.dayNames       = dateHelper.buildDayNames();
+            scope.dayNames       = scope.dayNames || dateHelper.buildDayNames();
 
             scope.dates = map(dates, function(date) {
               date.classNames = [date.enabled ? 'pickadate-enabled' : 'pickadate-disabled'];
