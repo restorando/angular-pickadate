@@ -10,6 +10,7 @@ describe('pickadate', function () {
       pickadateI18nProvider,
       defaultHtml = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
                       'disabled-dates="disabledDatesFn(date, formattedDate)"' +
+                      'day-names="dayNames"' +
                       'week-starts-on="weekStartsOn"' +
                       'default-date="defaultDate" select-other-months="next">' +
                     '</div>';
@@ -104,6 +105,24 @@ describe('pickadate', function () {
         expect($('.pickadate-active').length).to.equal(1);
       });
 
+    });
+
+    describe('dayNames', function() {
+      it('renders with full names by default', function() {
+        var dayNames = $('.pickadate-main .pickadate-head').map(function() {
+          return this.textContent
+        }).get();
+        expect(dayNames).to.eql(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
+      })
+
+      it.only('renders passed names', function() {
+        $scope.dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+        compile();
+        var dayNames = $('.pickadate-main .pickadate-head').map(function() {
+          return this.textContent
+        }).get();
+        expect(dayNames).to.eql($scope.dayNames);
+      })
     });
 
     describe('Disabled dates', function() {
