@@ -20,7 +20,9 @@
     .provider('pickadateI18n', function() {
       var defaults = {
         'prev': 'prev',
-        'next': 'next'
+        'next': 'next',
+        'varDelimStart': '{{',
+        'varDelimEnd': '}}'
       };
 
       this.translations = {};
@@ -224,19 +226,19 @@
               '</a>' +
             '</div>'+
             '<h3 class="pickadate-centered-heading">' +
-              '{{currentDate | date:"MMMM yyyy"}}' +
+          $sce.trustAsHtml(i18n.t('varDelimStart')) + 'currentDate | date:"MMMM yyyy"' + $sce.trustAsHtml(i18n.t('varDelimEnd'))  +
             '</h3>' +
           '</div>' +
           '<div class="pickadate-body">' +
             '<div class="pickadate-main">' +
               '<ul class="pickadate-cell">' +
                 '<li class="pickadate-head" ng-repeat="dayName in dayNames">' +
-                  '{{dayName}}' +
+          $sce.trustAsHtml(i18n.t('varDelimStart')) + 'dayName' + $sce.trustAsHtml(i18n.t('varDelimEnd')) +
                 '</li>' +
               '</ul>' +
               '<ul class="pickadate-cell">' +
                 '<li ng-repeat="dateObj in dates" ng-click="setDate(dateObj)" ng-class="classesFor(dateObj)">' +
-                  '{{dateObj.date | date:"d"}}' +
+          $sce.trustAsHtml(i18n.t('varDelimStart')) + 'dateObj.date | date:"d"' + $sce.trustAsHtml(i18n.t('varDelimEnd')) +
                 '</li>' +
               '</ul>' +
             '</div>' +
