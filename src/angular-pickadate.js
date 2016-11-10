@@ -111,7 +111,7 @@
         return {
 
           parseDate: function(dateString) {
-            if (!dateString) return;
+            if (!dateString || !dateString.length) return;
             if (angular.isDate(dateString)) return new Date(dateString);
 
             var formatRegex = '(dd|MM|yyyy)',
