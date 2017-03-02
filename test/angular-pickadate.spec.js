@@ -10,6 +10,7 @@ describe('pickadate', function () {
       pickadateI18nProvider,
       defaultHtml = '<div pickadate ng-model="date" min-date="minDate" max-date="maxDate"' +
                       'disabled-dates="disabledDatesFn(date, formattedDate)"' +
+                      'special-dates="specialDatesFn(date, formattedDate)"' +
                       'week-starts-on="weekStartsOn"' +
                       'default-date="defaultDate" select-other-months="next">' +
                     '</div>';
@@ -27,6 +28,9 @@ describe('pickadate', function () {
       $document = _$document_;
       $scope.disabledDatesFn = function(date, formattedDate) {
         return ($scope.disabledDates || []).indexOf(formattedDate) > -1;
+      },
+      $scope.specialDatesFn = function(date, formattedDate) {
+        return ($scope.specialDates || []).indexOf(formattedDate) > -1;
       }
     });
   });
@@ -140,6 +144,40 @@ describe('pickadate', function () {
           expect($('li:contains(19)')).to.have.class('pickadate-unavailable');
           expect($('li:contains(25)')).to.have.class('pickadate-unavailable');
           expect($('li:contains(26)')).to.have.class('pickadate-unavailable');
+        });
+      })
+
+    });
+
+    describe('Special dates', function() {
+
+      describe('As an array', function() {
+        beforeEach(function() {
+          $scope.specialDates = ['2014-05-20', '2014-05-26'];
+          compile();
+        });
+
+        it("adds the 'pickadate-special' class to the special dates", function() {
+          expect($('li:contains(20)')).to.have.class('pickadate-special');
+          expect($('li:contains(26)')).to.have.class('pickadate-special');
+        });
+      });
+
+      describe('As a function', function() {
+        beforeEach(function() {
+          $scope.specialDatesFn = function(date) {
+            return date.getDay() <= 1;
+          }
+          compile();
+        });
+
+        it("adds the 'pickadate-special' class to the special dates", function() {
+          expect($('li:contains(11)')).to.have.class('pickadate-special');
+          expect($('li:contains(12)')).to.have.class('pickadate-special');
+          expect($('li:contains(18)')).to.have.class('pickadate-special');
+          expect($('li:contains(19)')).to.have.class('pickadate-special');
+          expect($('li:contains(25)')).to.have.class('pickadate-special');
+          expect($('li:contains(26)')).to.have.class('pickadate-special');
         });
       })
 
