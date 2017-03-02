@@ -94,6 +94,36 @@ function MyAppController($scope) {
 }
 ```
 
+#### special-dates
+
+You can specify a function that will determine if a date is special or not. You can pass `formattedDate` as an argument to receive the date formatted in the current locale, or `date` to receive the date object. You can pass both of them if you need.
+
+```html
+<div pickadate ng-model="date" special-dates="specialDatesFn(formattedDate)"></div>
+```
+
+```javascript
+function MyAppController($scope) {
+    $scope.specialDatesFn = function(formattedDate) {
+        return ['2013-11-10', '2013-11-15', '2013-11-19'].indexOf(formattedDate) > -1;
+    }
+}
+```
+
+This is handy if you want to disable dates programatically.
+
+```html
+<div pickadate ng-model="date" special-dates="specialDatesFn(date)"></div>
+```
+
+```javascript
+function MyAppController($scope) {
+    $scope.specialDatesFn = function(date) {
+        return date.getDay() === 6; // Disable every Sunday
+    }
+}
+```
+
 #### default-date
 
 Allows you to preset the calendar to a particular month without setting the chosen date.

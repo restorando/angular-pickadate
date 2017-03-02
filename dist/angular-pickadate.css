@@ -34,6 +34,8 @@
       border-right: 1px solid #DCDCDC; }
     .pickadate-cell li:nth-child(1), .pickadate-cell li:nth-child(8), .pickadate-cell li:nth-child(15), .pickadate-cell li:nth-child(22), .pickadate-cell li:nth-child(29), .pickadate-cell li:nth-child(36) {
       border-left: 1px solid #DCDCDC; }
+  .pickadate-cell .pickadate-special {
+    text-decoration: underline; }
   .pickadate-cell .pickadate-disabled {
     color: #DCDCDC; }
     .pickadate-cell .pickadate-disabled a {

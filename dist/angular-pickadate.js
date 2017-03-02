@@ -98,13 +98,14 @@
       }
 
       return function(format, options) {
-        var minDate, maxDate, disabledDates, currentDate, weekStartsOn, noExtraRows;
+        var minDate, maxDate, disabledDates, specialDates, currentDate, weekStartsOn, noExtraRows;
 
         options       = options || {};
         format        = format  || 'yyyy-MM-dd';
         weekStartsOn  = options.weekStartsOn;
         noExtraRows   = options.noExtraRows;
         disabledDates = options.disabledDates || angular.noop;
+        specialDates  = options.specialDates || angular.noop;
 
         if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) weekStartsOn = 0;
 
@@ -152,6 +153,7 @@
             var localDate     = angular.copy(date),
                 formattedDate = dateFilter(localDate, format),
                 disabled      = disabledDates({date: localDate, formattedDate: formattedDate}),
+                special       = specialDates({date: localDate, formattedDate: formattedDate}),
                 monthOffset   = this.getMonthOffset(localDate, currentDate),
                 outOfMinRange = localDate < minDate,
                 outOfMaxRange = localDate > maxDate,
@@ -163,6 +165,7 @@
               formattedDate: formattedDate,
               today: formattedDate === dateFilter(new Date(), format),
               disabled: disabled,
+              special: special,
               outOfMinRange: outOfMinRange,
               outOfMaxRange: outOfMaxRange,
               monthOffset: monthOffset,
@@ -250,7 +253,8 @@
           minDate: '=',
           maxDate: '=',
           disabledDates: '&',
-          weekStartsOn: '='
+          weekStartsOn: '=',
+          specialDates: '&'
         },
 
         link: function(scope, element, attrs, ngModel)  {
@@ -265,7 +269,8 @@
                 nextMonthSelectable:     /^(next|both)$/.test(attrs.selectOtherMonths),
                 weekStartsOn: scope.weekStartsOn,
                 noExtraRows: attrs.hasOwnProperty('noExtraRows'),
-                disabledDates: scope.disabledDates
+                disabledDates: scope.disabledDates,
+                specialDates: scope.specialDates
               });
 
           scope.displayPicker = !wantsModal;
@@ -282,6 +287,8 @@
           };
 
           var $render = ngModel.$render = function(options) {
+            if (!ngModel.$viewValue) return;
+
             if (angular.isArray(ngModel.$viewValue)) {
               selectedDates = ngModel.$viewValue;
             } else if (ngModel.$viewValue) {
@@ -360,6 +367,7 @@
 
               if (date.today)    date.classNames.push('pickadate-today');
               if (date.disabled) date.classNames.push('pickadate-unavailable');
+              if (date.special) date.classNames.push('pickadate-special');
 
               return date;
             });
