@@ -287,6 +287,8 @@
           };
 
           var $render = ngModel.$render = function(options) {
+            if (ngModel.$viewValue) return;
+
             if (angular.isArray(ngModel.$viewValue)) {
               selectedDates = ngModel.$viewValue;
             } else if (ngModel.$viewValue) {
