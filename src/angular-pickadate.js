@@ -250,7 +250,8 @@
           minDate: '=',
           maxDate: '=',
           disabledDates: '&',
-          weekStartsOn: '='
+          weekStartsOn: '=',
+          holidayList: '='
         },
 
         link: function(scope, element, attrs, ngModel)  {
@@ -269,6 +270,10 @@
               });
 
           scope.displayPicker = !wantsModal;
+
+          function isHoliday(dateStr) {
+            return indexOf.call(scope.holidayList, dateStr) >= 0;
+          }
 
           scope.setDate = function(dateObj) {
             if (!dateObj.enabled) return;
@@ -360,6 +365,8 @@
 
               if (date.today)    date.classNames.push('pickadate-today');
               if (date.disabled) date.classNames.push('pickadate-unavailable');
+
+              if (isHoliday(date))    date.classNames.push('pickadate-holiday');
 
               return date;
             });
